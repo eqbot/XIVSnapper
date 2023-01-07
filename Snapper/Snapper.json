@@ -1,0 +1,11 @@
+{
+  "Author": "Eqbot",
+  "Name": "Snapper",
+  "Punchline": "Snapshot mods from your friends",
+  "Description": "/psnap to use",
+  "InternalName": "snapper",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "snapper"
+  ]
+}

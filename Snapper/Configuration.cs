@@ -1,8 +1,8 @@
-﻿using Dalamud.Configuration;
+using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
 
-namespace SamplePlugin
+namespace Snapper
 {
     [Serializable]
     public class Configuration : IPluginConfiguration
@@ -10,6 +10,8 @@ namespace SamplePlugin
         public int Version { get; set; } = 0;
 
         public bool SomePropertyToBeSavedAndWithADefault { get; set; } = true;
+
+        public string WorkingDirectory { get; set; } = string.Empty;
 
         // the below exist just to make saving less cumbersome
         [NonSerialized]
