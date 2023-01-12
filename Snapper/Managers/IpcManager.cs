@@ -56,6 +56,7 @@ public class IpcManager : IDisposable
 
     private readonly ICallGateSubscriber<string> _customizePlusApiVersion;
     private readonly ICallGateSubscriber<string, string> _customizePlusGetBodyScale;
+    private readonly ICallGateSubscriber<Character?, string> _customizePlusGetBodyScaleFromCharacter; 
     private readonly ICallGateSubscriber<string, Character?, object> _customizePlusSetBodyScaleToCharacter;
     private readonly ICallGateSubscriber<Character?, object> _customizePlusRevert;
     private readonly ICallGateSubscriber<string?, object> _customizePlusOnScaleUpdate;
@@ -105,6 +106,7 @@ public class IpcManager : IDisposable
 
         _customizePlusApiVersion = pi.GetIpcSubscriber<string>("CustomizePlus.GetApiVersion");
         _customizePlusGetBodyScale = pi.GetIpcSubscriber<string, string>("CustomizePlus.GetBodyScale");
+        _customizePlusGetBodyScaleFromCharacter = pi.GetIpcSubscriber<Character?, string>("CustomizePlus.GetBodyScaleFromCharacter");
         _customizePlusRevert = pi.GetIpcSubscriber<Character?, object>("CustomizePlus.RevertCharacter");
         _customizePlusSetBodyScaleToCharacter = pi.GetIpcSubscriber<string, Character?, object>("CustomizePlus.SetBodyScaleToCharacter");
         _customizePlusOnScaleUpdate = pi.GetIpcSubscriber<string?, object>("CustomizePlus.OnScaleUpdate");
@@ -275,6 +277,18 @@ public class IpcManager : IDisposable
         if (!CheckCustomizePlusApi()) return string.Empty;
         var scale = _customizePlusGetBodyScale.InvokeFunc(_dalamudUtil.PlayerName);
         if (string.IsNullOrEmpty(scale)) return string.Empty;
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes(scale));
+    }
+
+    public string GetCustomizePlusScaleFromCharacter(Character? character)
+    {
+        if (!CheckCustomizePlusApi()) return string.Empty;
+        var scale = _customizePlusGetBodyScale.InvokeFunc(character.Name.TextValue);
+        if (string.IsNullOrEmpty(scale))
+        {
+            Logger.Debug("C+ returned null");
+            return string.Empty;
+        }
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(scale));
     }
 

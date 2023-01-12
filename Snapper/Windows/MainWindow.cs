@@ -35,8 +35,6 @@ public partial class MainWindow : Window, IDisposable
 
     public override void Draw()
     {
-        ImGui.Text($"The random config bool is {this.Plugin.Configuration.SomePropertyToBeSavedAndWithADefault}");
-
         if (ImGui.Button("Show Settings"))
         {
             this.Plugin.DrawConfigUI();

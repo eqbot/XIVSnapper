@@ -63,6 +63,14 @@ namespace Snapper.Managers
                 snapshotInfo.FileReplacements.Add(relativePath, replacement.GamePaths);
             }
 
+            //Get customize+ data, if applicable
+            if (Plugin.IpcManager.CheckCustomizePlusApi())
+            {
+                var data = Plugin.IpcManager.GetCustomizePlusScaleFromCharacter(character);
+                Logger.Debug($"Cust+: {data}");
+            }
+
+
             string infoJson = JsonSerializer.Serialize(snapshotInfo);
             File.WriteAllText(path + "\\" + "snapshot.json", infoJson);
 
