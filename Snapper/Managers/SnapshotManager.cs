@@ -227,7 +227,17 @@ namespace Snapper.Managers
             }
 
             Logger.Verbose("Checking File Replacement for Material " + fileName);
-            var mtrlPath = fileName.Split("|")[2];
+            var mtrlArray = fileName.Split("|");
+            string mtrlPath;
+            if (mtrlArray.Count() >= 3)
+            {
+                mtrlPath = fileName.Split("|")[2];
+            }
+            else
+            {
+                Logger.Warn($"Material {fileName} did not split into at least 3 partts");
+                return;
+            }
 
             if (replacements.Any(c => c.ResolvedPath.Contains(mtrlPath, StringComparison.Ordinal)))
             {
