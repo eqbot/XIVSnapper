@@ -55,6 +55,7 @@ public class IpcManager : IDisposable
     private readonly ICallGateSubscriber<GameObject, object?> _heelsUnregisterPlayer;
 
     private readonly ICallGateSubscriber<string> _customizePlusApiVersion;
+    private readonly ICallGateSubscriber<string> _customizePlusBranch;
     private readonly ICallGateSubscriber<string, string> _customizePlusGetBodyScale;
     private readonly ICallGateSubscriber<Character?, string> _customizePlusGetBodyScaleFromCharacter; 
     private readonly ICallGateSubscriber<string, Character?, object> _customizePlusSetBodyScaleToCharacter;
@@ -105,7 +106,8 @@ public class IpcManager : IDisposable
         _heelsOffsetUpdate.Subscribe(HeelsOffsetChange);
 
         _customizePlusApiVersion = pi.GetIpcSubscriber<string>("CustomizePlus.GetApiVersion");
-        _customizePlusGetBodyScale = pi.GetIpcSubscriber<string, string>("CustomizePlus.GetBodyScale");
+        _customizePlusBranch = pi.GetIpcSubscriber<string>("CustomizePlus.GetBranch");
+        _customizePlusGetBodyScale = pi.GetIpcSubscriber<string, string>("CustomizePlus.GetTemporaryScale");
         _customizePlusGetBodyScaleFromCharacter = pi.GetIpcSubscriber<Character?, string>("CustomizePlus.GetBodyScaleFromCharacter");
         _customizePlusRevert = pi.GetIpcSubscriber<Character?, object>("CustomizePlus.RevertCharacter");
         _customizePlusSetBodyScaleToCharacter = pi.GetIpcSubscriber<string, Character?, object>("CustomizePlus.SetBodyScaleToCharacter");
@@ -200,6 +202,17 @@ public class IpcManager : IDisposable
     {
         try
         {
+            return string.Equals(_customizePlusApiVersion.InvokeFunc(), "1.0", StringComparison.Ordinal) && string.Equals(_customizePlusBranch.InvokeFunc(), "eqbot", StringComparison.Ordinal);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    public bool CheckCustomizePlusBranch()
+    {
+        try
+        {
             return string.Equals(_customizePlusApiVersion.InvokeFunc(), "1.0", StringComparison.Ordinal);
         }
         catch
@@ -280,7 +293,7 @@ public class IpcManager : IDisposable
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(scale));
     }
 
-    public string GetCustomizePlusScaleFromCharacter(Character? character)
+    public string GetCustomizePlusScaleFromCharacter(Character character)
     {
         if (!CheckCustomizePlusApi()) return string.Empty;
         var scale = _customizePlusGetBodyScale.InvokeFunc(character.Name.TextValue);
@@ -289,7 +302,7 @@ public class IpcManager : IDisposable
             Logger.Debug("C+ returned null");
             return string.Empty;
         }
-        return Convert.ToBase64String(Encoding.UTF8.GetBytes(scale));
+        return scale;
     }
 
     public void CustomizePlusSetBodyScale(IntPtr character, string scale)
@@ -300,9 +313,8 @@ public class IpcManager : IDisposable
             var gameObj = _dalamudUtil.CreateGameObject(character);
             if (gameObj is Character c)
             {
-                string decodedScale = Encoding.UTF8.GetString(Convert.FromBase64String(scale));
                 Logger.Verbose("CustomizePlus applying for " + c.Address.ToString("X"));
-                _customizePlusSetBodyScaleToCharacter!.InvokeAction(decodedScale, c);
+                _customizePlusSetBodyScaleToCharacter!.InvokeAction(scale, c);
             }
         });
     }

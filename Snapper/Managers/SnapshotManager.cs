@@ -18,6 +18,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using System.IO;
 using System.Text.Json;
 using Snapper.Interop;
+using Dalamud.Utility;
 
 namespace Snapper.Managers
 {
@@ -49,6 +50,7 @@ namespace Snapper.Managers
             Logger.Debug($"Got glamourer string {snapshotInfo.GlamourerString}");
 
             //Save all file replacements
+            
             List<FileReplacement> replacements = GetFileReplacementsForCharacter(character);
 
             Logger.Debug($"Got {replacements.Count} replacements");
@@ -62,12 +64,20 @@ namespace Snapper.Managers
                 replacementFile.CopyTo(fileToCreate.FullName);
                 snapshotInfo.FileReplacements.Add(relativePath, replacement.GamePaths);
             }
+            
 
             //Get customize+ data, if applicable
             if (Plugin.IpcManager.CheckCustomizePlusApi())
             {
+                Logger.Debug("C+ api loaded");
                 var data = Plugin.IpcManager.GetCustomizePlusScaleFromCharacter(character);
-                Logger.Debug($"Cust+: {data}");
+                //Logger.Info(Plugin.DalamudUtil.PlayerName);
+                //Logger.Info(character.Name.TextValue);
+                //Logger.Info($"Cust+: {data}");
+                if (!data.IsNullOrEmpty())
+                {
+                    File.WriteAllText(path + "\\" + "customizePlus.json", data);
+                }
             }
 
 
@@ -105,6 +115,16 @@ namespace Snapper.Managers
 
             Plugin.IpcManager.PenumbraRemoveTemporaryCollection(characterApplyTo.Name.TextValue);
             Plugin.IpcManager.PenumbraSetTemporaryMods(characterApplyTo.Name.TextValue, moddedPaths, snapshotInfo.ManipulationString);
+
+            //Apply Customize+ if it exists and C+ is installed
+            if (Plugin.IpcManager.CheckCustomizePlusApi())
+            {
+                if(File.Exists(path + "\\" + "customizePlus.json"))
+                {
+                    string custPlusData = File.ReadAllText(path + "\\" + "customizePlus.json");
+                    Plugin.IpcManager.CustomizePlusSetBodyScale(characterApplyTo.Address, custPlusData);
+                }
+            }
 
             //Apply glamourer string
             Plugin.IpcManager.GlamourerApplyAll(snapshotInfo.GlamourerString, characterApplyTo.Address);

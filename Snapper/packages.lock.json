@@ -4,9 +4,9 @@
     "net7.0-windows7.0": {
       "DalamudPackager": {
         "type": "Direct",
-        "requested": "[2.1.8, )",
-        "resolved": "2.1.8",
-        "contentHash": "YqagNXs9InxmqkXzq7kLveImxnodkBEicAhydMXVp7dFjC7xb76U6zGgAax4/BWIWfZeWzr5DJyQSev31kj81A=="
+        "requested": "[2.1.10, )",
+        "resolved": "2.1.10",
+        "contentHash": "S6NrvvOnLgT4GDdgwuKVJjbFo+8ZEj+JsEYk9ojjOR/MMfv1dIFpT8aRJQfI24rtDcw1uF+GnSSMN4WW1yt7fw=="
       },
       "Microsoft.Extensions.Logging": {
         "type": "Direct",
@@ -22,15 +22,15 @@
       },
       "Penumbra.Api": {
         "type": "Direct",
-        "requested": "[1.0.4, )",
-        "resolved": "1.0.4",
-        "contentHash": "ngZDigKY1pLRfmfCxJPMY2ZMdK4lYE7E9EphdES91Om5gN/KJleKxr334PRE7pphMuayDIWn2djDYHe6RfF62Q=="
+        "requested": "[1.0.5, )",
+        "resolved": "1.0.5",
+        "contentHash": "Ww7tlq68UF2catcu+y05lPtO8BZUElXyd/DSiim3UOAMPPbq0fVgUCR96v6taJuWrplWg9aYJVZXxcI4Pu4k6w=="
       },
       "Penumbra.String": {
         "type": "Direct",
-        "requested": "[1.0.0, )",
-        "resolved": "1.0.0",
-        "contentHash": "4QGyrlNFS16W0jdnl+nQGLKEVMD10POYrfff2M+pXd7qU95TK1LRjD22wr2FiLmu65+7iszzudG8Ant08DC8xw=="
+        "requested": "[1.0.1, )",
+        "resolved": "1.0.1",
+        "contentHash": "QbyZmC8rh1fwKemikT8IoAzshDkq76cXWZ7Dvctp6CDCW51lpZzKs6sRvGri9IOowWYVRyG9+TgreXJy+lVQJA=="
       },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "Transitive",
