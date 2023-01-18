@@ -75,6 +75,10 @@ namespace Snapper.Windows
                     ImGui.PopFont();
                 }
             }
+            else
+            {
+                ImGui.Text("Loading snapshots can only be done on GPose actors");
+            }
         }
 
         private void DrawMonsterPanel()
