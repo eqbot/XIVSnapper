@@ -45,32 +45,35 @@ namespace Snapper.Windows
                 ImGui.PopFont();
             }
 
-            ImGui.Text("Load snapshot onto ");
-            ImGui.SameLine();
-            ImGui.PushFont(UiBuilder.IconFont);
-            try
+            if (this.modifiable)
             {
-                string loadIcon = FontAwesomeIcon.Clipboard.ToIconString();
-                if (ImGui.Button(loadIcon))
+                ImGui.Text("Load snapshot onto ");
+                ImGui.SameLine();
+                ImGui.PushFont(UiBuilder.IconFont);
+                try
                 {
-                    Plugin.FileDialogManager.OpenFolderDialog("Snapshot selection", (status, path) =>
+                    string loadIcon = FontAwesomeIcon.Clipboard.ToIconString();
+                    if (ImGui.Button(loadIcon))
                     {
-                        if (!status)
+                        Plugin.FileDialogManager.OpenFolderDialog("Snapshot selection", (status, path) =>
                         {
-                            return;
-                        }
+                            if (!status)
+                            {
+                                return;
+                            }
 
-                        if (Directory.Exists(path))
-                        {
-                            if (player != null && objIdxSelected.HasValue)
-                                Plugin.SnapshotManager.LoadSnapshot(player, objIdxSelected.Value, path);
-                        }
-                    }, Plugin.Configuration.WorkingDirectory);
+                            if (Directory.Exists(path))
+                            {
+                                if (player != null && objIdxSelected.HasValue)
+                                    Plugin.SnapshotManager.LoadSnapshot(player, objIdxSelected.Value, path);
+                            }
+                        }, Plugin.Configuration.WorkingDirectory);
+                    }
                 }
-            }
-            finally
-            {
-                ImGui.PopFont();
+                finally
+                {
+                    ImGui.PopFont();
+                }
             }
         }
 

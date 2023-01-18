@@ -71,6 +71,7 @@ namespace Snapper
         {
             this.WindowSystem.RemoveAllWindows();
             this.CommandManager.RemoveHandler(CommandName);
+            this.SnapshotManager.RevertAllSnapshots();
         }
 
         private void OnCommand(string command, string args)

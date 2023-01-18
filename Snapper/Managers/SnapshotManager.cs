@@ -25,7 +25,7 @@ namespace Snapper.Managers
     public class SnapshotManager
     {
         private Plugin Plugin;
-        private List<string> tempCollections = new();
+        private List<Character> tempCollections = new();
 
         public SnapshotManager(Plugin plugin)
         {
@@ -37,7 +37,9 @@ namespace Snapper.Managers
         {
             foreach(var character in tempCollections)
             {
-                Plugin.IpcManager.PenumbraRemoveTemporaryCollection(character);
+                Plugin.IpcManager.PenumbraRemoveTemporaryCollection(character.Name.TextValue);
+                Plugin.IpcManager.GlamourerRevertCharacterCustomization(character);
+                Plugin.IpcManager.CustomizePlusRevert(character.Address);
             }
             tempCollections.Clear();
         }
@@ -126,9 +128,9 @@ namespace Snapper.Managers
 
             Plugin.IpcManager.PenumbraRemoveTemporaryCollection(characterApplyTo.Name.TextValue);
             Plugin.IpcManager.PenumbraSetTemporaryMods(characterApplyTo, objIdx, moddedPaths, snapshotInfo.ManipulationString);
-            if (!tempCollections.Contains(characterApplyTo.Name.TextValue))
+            if (!tempCollections.Contains(characterApplyTo))
             {
-                tempCollections.Add(characterApplyTo.Name.TextValue);
+                tempCollections.Add(characterApplyTo);
             }
 
             //Apply Customize+ if it exists and C+ is installed

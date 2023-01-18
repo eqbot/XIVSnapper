@@ -23,6 +23,7 @@ namespace Snapper.Windows
         private string playerFilterLower = string.Empty;
         private string currentLabel = string.Empty;
         private Character? player;
+        private bool modifiable = false;
         private int? objIdxSelected;
         private Character? playerSelected;
         private readonly Dictionary<string, int> playerNames = new(100);
@@ -57,6 +58,7 @@ namespace Snapper.Windows
                     currentLabel = label;
                     this.player = player;
                     this.objIdxSelected = objIdx;
+                    this.modifiable = modifiable;
                     return;
                 }
 
@@ -67,6 +69,7 @@ namespace Snapper.Windows
             {
                 this.player = player;
                 this.objIdxSelected = objIdx;
+                this.modifiable = modifiable;
             }
             catch (Exception e)
             {
@@ -82,7 +85,7 @@ namespace Snapper.Windows
                 ExamineScreenIndex => ("Examine Screen Actor", false),
                 FittingRoomIndex => ("Fitting Room Actor", false),
                 DyePreviewIndex => ("Dye Preview Actor", false),
-                _ => (player.Name.ToString(), true),
+                _ => (player.Name.ToString(), false),
             };
             if (!playerName.Any())
                 return;
