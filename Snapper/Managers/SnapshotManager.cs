@@ -25,11 +25,21 @@ namespace Snapper.Managers
     public class SnapshotManager
     {
         private Plugin Plugin;
+        private List<string> tempCollections = new();
 
         public SnapshotManager(Plugin plugin)
         {
 
             this.Plugin = plugin;
+        }
+
+        public void RevertAllSnapshots()
+        {
+            foreach(var character in tempCollections)
+            {
+                Plugin.IpcManager.PenumbraRemoveTemporaryCollection(character);
+            }
+            tempCollections.Clear();
         }
 
         public bool SaveSnapshot(Character character)
@@ -87,8 +97,9 @@ namespace Snapper.Managers
             return true;
         }
 
-        public bool LoadSnapshot(Character characterApplyTo, string path)
+        public bool LoadSnapshot(Character characterApplyTo, int objIdx, string path)
         {
+            Logger.Info($"Applying snapshot to {characterApplyTo.Address}");
             string infoJson = File.ReadAllText(path + @"\" + "snapshot.json");
             if (infoJson == null)
             {
@@ -114,7 +125,11 @@ namespace Snapper.Managers
             Logger.Debug($"Applied {moddedPaths.Count} replacements");
 
             Plugin.IpcManager.PenumbraRemoveTemporaryCollection(characterApplyTo.Name.TextValue);
-            Plugin.IpcManager.PenumbraSetTemporaryMods(characterApplyTo.Name.TextValue, moddedPaths, snapshotInfo.ManipulationString);
+            Plugin.IpcManager.PenumbraSetTemporaryMods(characterApplyTo, objIdx, moddedPaths, snapshotInfo.ManipulationString);
+            if (!tempCollections.Contains(characterApplyTo.Name.TextValue))
+            {
+                tempCollections.Add(characterApplyTo.Name.TextValue);
+            }
 
             //Apply Customize+ if it exists and C+ is installed
             if (Plugin.IpcManager.CheckCustomizePlusApi())
@@ -127,9 +142,22 @@ namespace Snapper.Managers
             }
 
             //Apply glamourer string
-            Plugin.IpcManager.GlamourerApplyAll(snapshotInfo.GlamourerString, characterApplyTo.Address);
+            Plugin.IpcManager.GlamourerApplyAll(snapshotInfo.GlamourerString, characterApplyTo);
 
             return true;
+        }
+
+        private int? GetObjIDXFromCharacter(Character character)
+        {
+            for (var i = 0; i <= Plugin.Objects.Length; i++)
+            {
+                global::Dalamud.Game.ClientState.Objects.Types.GameObject current = Plugin.Objects[i];
+                if (!(current == null) && current.ObjectId == character.ObjectId)
+                {
+                    return i;
+                }
+            }
+            return null;
         }
 
         public unsafe List<FileReplacement> GetFileReplacementsForCharacter(Character character)
@@ -138,18 +166,14 @@ namespace Snapper.Managers
             var charaPointer = character.Address;
             var objectKind = character.ObjectKind;
             var charaName = character.Name.TextValue;
-            int objIdx = -1;
-
-            for(var i = 0; i <= Plugin.Objects.Length; i++)
-            {
-                global::Dalamud.Game.ClientState.Objects.Types.GameObject current = Plugin.Objects[i];
-                if (!(current == null) && current.ObjectId == character.ObjectId)
-                {
-                    objIdx = i;
-                }
-            }
+            int? objIdx = GetObjIDXFromCharacter(character);
 
             Logger.Debug($"Character name {charaName}");
+            if(objIdx == null)
+            {
+                Logger.Error("Unable to find character in object table, aborting search for file replacements");
+                return replacements;
+            }
             Logger.Debug($"Object IDX {objIdx}");
 
             var chara = Plugin.DalamudUtil.CreateGameObject(charaPointer)!;
@@ -171,10 +195,10 @@ namespace Snapper.Managers
                     continue;
                 }
 
-                AddReplacementsFromRenderModel(mdl, replacements, objIdx, 0);
+                AddReplacementsFromRenderModel(mdl, replacements, objIdx.Value, 0);
             }
 
-            AddPlayerSpecificReplacements(replacements, charaPointer, human, objIdx);
+            AddPlayerSpecificReplacements(replacements, charaPointer, human, objIdx.Value);
 
             return replacements;
         }

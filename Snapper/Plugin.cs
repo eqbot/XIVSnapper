@@ -64,6 +64,7 @@ namespace Snapper
 
             this.PluginInterface.UiBuilder.Draw += DrawUI;
             this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+            this.PluginInterface.UiBuilder.DisableGposeUiHide = true;
         }
 
         public void Dispose()

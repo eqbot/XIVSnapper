@@ -40,6 +40,12 @@ public partial class MainWindow : Window, IDisposable
             this.Plugin.DrawConfigUI();
         }
 
+        ImGui.SameLine();
+        if(ImGui.Button("Revert penumbra temp."))
+        {
+            this.Plugin.SnapshotManager.RevertAllSnapshots();
+        }
+
         ImGui.Spacing();
         /*
         ImGui.Text("Have a goat:");

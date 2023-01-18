@@ -1,6 +1,7 @@
 using Dalamud.Interface;
 using Dalamud.Interface.ImGuiFileDialog;
 using ImGuiNET;
+using Snapper.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,8 +62,8 @@ namespace Snapper.Windows
 
                         if (Directory.Exists(path))
                         {
-                            if (player != null)
-                                Plugin.SnapshotManager.LoadSnapshot(player, path);
+                            if (player != null && objIdxSelected.HasValue)
+                                Plugin.SnapshotManager.LoadSnapshot(player, objIdxSelected.Value, path);
                         }
                     }, Plugin.Configuration.WorkingDirectory);
                 }

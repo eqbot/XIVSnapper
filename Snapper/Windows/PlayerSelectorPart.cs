@@ -23,6 +23,7 @@ namespace Snapper.Windows
         private string playerFilterLower = string.Empty;
         private string currentLabel = string.Empty;
         private Character? player;
+        private int? objIdxSelected;
         private Character? playerSelected;
         private readonly Dictionary<string, int> playerNames = new(100);
         private readonly Dictionary<string, Character?> gPoseActors = new(CharacterScreenIndex - GPoseObjectId);
@@ -37,7 +38,7 @@ namespace Snapper.Windows
                 playerFilterLower = playerFilter.ToLowerInvariant();
         }
 
-        private void DrawGPoseSelectable(Character player)
+        private void DrawGPoseSelectable(Character player, int objIdx)
         {
             var playerName = player.Name.ToString();
             if (!playerName.Any())
@@ -45,16 +46,17 @@ namespace Snapper.Windows
 
             gPoseActors[playerName] = null;
 
-            DrawSelectable(player, $"{playerName} (GPose)", true);
+            DrawSelectable(player, $"{playerName} (GPose)", true, objIdx);
         }
 
-        private void DrawSelectable(Character player, string label, bool modifiable)
+        private void DrawSelectable(Character player, string label, bool modifiable, int objIdx)
         {
             if (!playerFilterLower.Any() || label.ToLowerInvariant().Contains(playerFilterLower))
                 if (ImGui.Selectable(label, currentLabel == label))
                 {
                     currentLabel = label;
                     this.player = player;
+                    this.objIdxSelected = objIdx;
                     return;
                 }
 
@@ -64,6 +66,7 @@ namespace Snapper.Windows
             try
             {
                 this.player = player;
+                this.objIdxSelected = objIdx;
             }
             catch (Exception e)
             {
@@ -71,7 +74,7 @@ namespace Snapper.Windows
             }
         }
 
-        private void DrawPlayerSelectable(Character player, int idx = 0)
+        private void DrawPlayerSelectable(Character player, int idx)
         {
             var (playerName, modifiable) = idx switch
             {
@@ -96,7 +99,7 @@ namespace Snapper.Windows
             }
 
             var label = GetLabel(player, playerName, num);
-            DrawSelectable(player, label, modifiable);
+            DrawSelectable(player, label, modifiable, idx);
         }
 
         private static string GetLabel(Character player, string playerName, int num)
@@ -130,14 +133,14 @@ namespace Snapper.Windows
                 if (player == null)
                     break;
 
-                DrawGPoseSelectable(player);
+                DrawGPoseSelectable(player, i);
             }
 
             for (var i = 0; i < GPoseObjectId; ++i)
             {
                 var player = CharacterFactory.Convert(Plugin.Objects[i]);
                 if (player != null)
-                    DrawPlayerSelectable(player);
+                    DrawPlayerSelectable(player, i);
             }
 
             for (var i = CharacterScreenIndex; i < Plugin.Objects.Length; ++i)
