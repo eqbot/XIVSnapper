@@ -41,7 +41,7 @@ public partial class MainWindow : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if(ImGui.Button("Revert penumbra temp."))
+        if(ImGui.Button("Revert snapshots"))
         {
             this.Plugin.SnapshotManager.RevertAllSnapshots();
         }
