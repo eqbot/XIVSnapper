@@ -1,4 +1,5 @@
 using Dalamud.Interface;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.ImGuiFileDialog;
 using ImGuiNET;
 using Snapper.Utils;
@@ -43,6 +44,12 @@ namespace Snapper.Windows
             finally
             {
                 ImGui.PopFont();
+            }
+            if (Plugin.PluginInterface.UiBuilder.GposeActive)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
+                ImGui.Text("WARNING: Saving snapshots while GPose is active may result in broken/incorrect snapshots. For best results, leave GPose first.");
+                ImGui.PopStyleColor();
             }
 
             if (this.modifiable)

@@ -22,7 +22,7 @@ namespace Snapper
         public string Name => "Snapper";
         private const string CommandName = "/psnap";
 
-        private DalamudPluginInterface PluginInterface { get; init; }
+        public DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
         public ObjectTable Objects { get; init; }
