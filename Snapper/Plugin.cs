@@ -13,6 +13,7 @@ using Dalamud.Game;
 using Dalamud.Game.Gui;
 using Dalamud.Game.ClientState.Conditions;
 using Snapper.Managers;
+using MareSynchronos.Export;
 
 namespace Snapper
 {
@@ -30,6 +31,7 @@ namespace Snapper
         public DalamudUtil DalamudUtil { get; init; }
         public IpcManager IpcManager { get; init; }
         public SnapshotManager SnapshotManager { get; init; }
+        public MareCharaFileManager MCDFManager { get; init; }
 
 
         public Plugin(
@@ -53,6 +55,7 @@ namespace Snapper
 
             this.SnapshotManager = new SnapshotManager(this);
 
+            this.MCDFManager = new MareCharaFileManager(this);
 
             WindowSystem.AddWindow(new ConfigWindow(this));
             WindowSystem.AddWindow(new MainWindow(this));

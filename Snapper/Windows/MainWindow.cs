@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Objects.Enums;
@@ -8,6 +9,8 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using ImGuiNET;
 using ImGuiScene;
+using LZ4;
+using Snapper.Utils;
 
 namespace Snapper.Windows;
 
@@ -46,12 +49,25 @@ public partial class MainWindow : Window, IDisposable
             this.Plugin.SnapshotManager.RevertAllSnapshots();
         }
 
+        ImGui.SameLine();
+        if(ImGui.Button("Import MCDF file"))
+        {
+            Plugin.FileDialogManager.OpenFileDialog("Snapshot selection", ".mcdf", (status, path) =>
+            {
+                if (!status)
+                {
+                    return;
+                }
+
+                if (File.Exists(path[0]))
+                {
+                    this.Plugin.MCDFManager.LoadMareCharaFile(path[0]);
+                    this.Plugin.MCDFManager.ExtractMareCharaFile();
+                }
+            }, 1, Plugin.Configuration.WorkingDirectory);
+        }
+
         ImGui.Spacing();
-        /*
-        ImGui.Text("Have a goat:");
-        ImGui.Indent(55);
-        ImGui.Image(this.GoatImage.ImGuiHandle, new Vector2(this.GoatImage.Width, this.GoatImage.Height));
-        ImGui.Unindent(55);*/
 
         this.DrawPlayerSelector();
         if (!currentLabel.Any())

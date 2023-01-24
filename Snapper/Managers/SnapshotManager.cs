@@ -121,7 +121,7 @@ namespace Snapper.Managers
             {
                 foreach(var gamePath in replacement.Value)
                 {
-                    moddedPaths.Add(gamePath, path + replacement.Key);
+                    moddedPaths.Add(gamePath, Path.Combine(path, replacement.Key));
                 }
             }
             Logger.Debug($"Applied {moddedPaths.Count} replacements");
