@@ -47,7 +47,7 @@ namespace Snapper.Managers
         public bool SaveSnapshot(Character character)
         {
             var charaName = character.Name.TextValue;
-            var path = Plugin.Configuration.WorkingDirectory + "\\" + charaName;
+            var path = Path.Combine(Plugin.Configuration.WorkingDirectory,charaName);
             SnapshotInfo snapshotInfo = new SnapshotInfo();
 
             if (Directory.Exists(path))
@@ -70,11 +70,11 @@ namespace Snapper.Managers
             foreach(var replacement in replacements)
             {
                 FileInfo replacementFile = new FileInfo(replacement.ResolvedPath);
-                string relativePath = replacementFile.FullName.Remove(0, 2); //strip drive letter from wherever the path is
-                FileInfo fileToCreate = new FileInfo(path + relativePath);
+                //string relativePath = replacementFile.FullName.Remove(0, 2); //strip drive letter from wherever the path is
+                FileInfo fileToCreate = new FileInfo(Path.Combine(path, replacement.GamePaths[0]));
                 fileToCreate.Directory.Create();
                 replacementFile.CopyTo(fileToCreate.FullName);
-                snapshotInfo.FileReplacements.Add(relativePath, replacement.GamePaths);
+                snapshotInfo.FileReplacements.Add(replacement.GamePaths[0], replacement.GamePaths);
             }
             
 
@@ -88,13 +88,13 @@ namespace Snapper.Managers
                 //Logger.Info($"Cust+: {data}");
                 if (!data.IsNullOrEmpty())
                 {
-                    File.WriteAllText(path + "\\" + "customizePlus.json", data);
+                    File.WriteAllText(Path.Combine(path, "customizePlus.json"), data);
                 }
             }
 
 
             string infoJson = JsonSerializer.Serialize(snapshotInfo);
-            File.WriteAllText(path + "\\" + "snapshot.json", infoJson);
+            File.WriteAllText(Path.Combine(path, "snapshot.json"), infoJson);
 
             return true;
         }
@@ -102,7 +102,7 @@ namespace Snapper.Managers
         public bool LoadSnapshot(Character characterApplyTo, int objIdx, string path)
         {
             Logger.Info($"Applying snapshot to {characterApplyTo.Address}");
-            string infoJson = File.ReadAllText(path + @"\" + "snapshot.json");
+            string infoJson = File.ReadAllText(Path.Combine(path,"snapshot.json"));
             if (infoJson == null)
             {
                 Logger.Warn("No snapshot json found, aborting");
@@ -136,9 +136,9 @@ namespace Snapper.Managers
             //Apply Customize+ if it exists and C+ is installed
             if (Plugin.IpcManager.CheckCustomizePlusApi())
             {
-                if(File.Exists(path + "\\" + "customizePlus.json"))
+                if(File.Exists(Path.Combine(path, "customizePlus.json")))
                 {
-                    string custPlusData = File.ReadAllText(path + "\\" + "customizePlus.json");
+                    string custPlusData = File.ReadAllText(Path.Combine(path, "customizePlus.json"));
                     Plugin.IpcManager.CustomizePlusSetBodyScale(characterApplyTo.Address, custPlusData);
                 }
             }
