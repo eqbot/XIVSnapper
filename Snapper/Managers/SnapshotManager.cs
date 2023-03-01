@@ -67,12 +67,7 @@ namespace Snapper.Managers
                 this.SaveSnapshot(character);
             }
 
-            //Get glamourer string
-            //snapshotInfo.GlamourerString = Plugin.IpcManager.GlamourerGetCharacterCustomization(character.Address);
-            //Logger.Debug($"Got glamourer string {snapshotInfo.GlamourerString}");
-
-            //Save all file replacements
-
+            //Merge file replacements
             List<FileReplacement> replacements = GetFileReplacementsForCharacter(character);
 
             Logger.Debug($"Got {replacements.Count} replacements");
@@ -89,11 +84,13 @@ namespace Snapper.Managers
                     foreach (var gamePath in replacement.GamePaths)
                     {
                         var collisions = snapshotInfo.FileReplacements.Where(src => src.Value.Any(path => path == gamePath));
+                        //gamepath already exists in snapshot, overwrite with new file
                         foreach (var collision in collisions)
                         {
                             collision.Value.Remove(gamePath);
                             if (collision.Value.Count == 0)
                             {
+                                //delete file if it no longer has any references
                                 snapshotInfo.FileReplacements.Remove(collision.Key);
                                 File.Delete(Path.Combine(path, collision.Key));
                             }
@@ -103,8 +100,13 @@ namespace Snapper.Managers
                 }
             }
 
+            //Merge meta manips
+            //Meta manipulations seem to be sent containing every mod a character has enabled, regardless of whether it's actively being used.
+            //This may end up shooting me in the foot, but a newer snapshot should contain the info of an older one.
+            snapshotInfo.ManipulationString = Plugin.IpcManager.PenumbraGetGameObjectMetaManipulations(character.ObjectIndex);
+
             string infoJsonWrite = JsonSerializer.Serialize(snapshotInfo);
-            File.WriteAllText(Path.Combine(path, "snapshot.json"), infoJson);
+            File.WriteAllText(Path.Combine(path, "snapshot.json"), infoJsonWrite);
 
             return true;
         }
@@ -142,7 +144,6 @@ namespace Snapper.Managers
             }
 
             snapshotInfo.ManipulationString = Plugin.IpcManager.PenumbraGetGameObjectMetaManipulations(character.ObjectIndex);
-
 
             //Get customize+ data, if applicable
             if (Plugin.IpcManager.CheckCustomizePlusApi())
