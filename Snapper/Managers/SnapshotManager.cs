@@ -44,11 +44,76 @@ namespace Snapper.Managers
             tempCollections.Clear();
         }
 
+        public bool AppendSnapshot(Character character)
+        {
+            var charaName = character.Name.TextValue;
+            var path = Path.Combine(Plugin.Configuration.WorkingDirectory, charaName);
+            string infoJson = File.ReadAllText(Path.Combine(path, "snapshot.json"));
+            if (infoJson == null)
+            {
+                Logger.Warn("No snapshot json found, aborting");
+                return false;
+            }
+            SnapshotInfo? snapshotInfo = JsonSerializer.Deserialize<SnapshotInfo>(infoJson);
+            if (snapshotInfo == null)
+            {
+                Logger.Warn("Failed to deserialize snapshot json, aborting");
+                return false;
+            }
+
+            if (!Directory.Exists(path))
+            {
+                //no existing snapshot for character, just use save mode
+                this.SaveSnapshot(character);
+            }
+
+            //Get glamourer string
+            //snapshotInfo.GlamourerString = Plugin.IpcManager.GlamourerGetCharacterCustomization(character.Address);
+            //Logger.Debug($"Got glamourer string {snapshotInfo.GlamourerString}");
+
+            //Save all file replacements
+
+            List<FileReplacement> replacements = GetFileReplacementsForCharacter(character);
+
+            Logger.Debug($"Got {replacements.Count} replacements");
+
+            foreach (var replacement in replacements)
+            {
+                FileInfo replacementFile = new FileInfo(replacement.ResolvedPath);
+                FileInfo fileToCreate = new FileInfo(Path.Combine(path, replacement.GamePaths[0]));
+                if (!fileToCreate.Exists)
+                {
+                    //totally new file
+                    fileToCreate.Directory.Create();
+                    replacementFile.CopyTo(fileToCreate.FullName);
+                    foreach (var gamePath in replacement.GamePaths)
+                    {
+                        var collisions = snapshotInfo.FileReplacements.Where(src => src.Value.Any(path => path == gamePath));
+                        foreach (var collision in collisions)
+                        {
+                            collision.Value.Remove(gamePath);
+                            if (collision.Value.Count == 0)
+                            {
+                                snapshotInfo.FileReplacements.Remove(collision.Key);
+                                File.Delete(Path.Combine(path, collision.Key));
+                            }
+                        }
+                    }
+                    snapshotInfo.FileReplacements.Add(replacement.GamePaths[0], replacement.GamePaths);
+                }
+            }
+
+            string infoJsonWrite = JsonSerializer.Serialize(snapshotInfo);
+            File.WriteAllText(Path.Combine(path, "snapshot.json"), infoJson);
+
+            return true;
+        }
+
         public bool SaveSnapshot(Character character)
         {
             var charaName = character.Name.TextValue;
             var path = Path.Combine(Plugin.Configuration.WorkingDirectory,charaName);
-            SnapshotInfo snapshotInfo = new SnapshotInfo();
+            SnapshotInfo snapshotInfo = new();
 
             if (Directory.Exists(path))
             {
@@ -70,7 +135,6 @@ namespace Snapper.Managers
             foreach(var replacement in replacements)
             {
                 FileInfo replacementFile = new FileInfo(replacement.ResolvedPath);
-                //string relativePath = replacementFile.FullName.Remove(0, 2); //strip drive letter from wherever the path is
                 FileInfo fileToCreate = new FileInfo(Path.Combine(path, replacement.GamePaths[0]));
                 fileToCreate.Directory.Create();
                 replacementFile.CopyTo(fileToCreate.FullName);
@@ -91,7 +155,6 @@ namespace Snapper.Managers
                     File.WriteAllText(Path.Combine(path, "customizePlus.json"), data);
                 }
             }
-
 
             string infoJson = JsonSerializer.Serialize(snapshotInfo);
             File.WriteAllText(Path.Combine(path, "snapshot.json"), infoJson);

@@ -52,6 +52,23 @@ namespace Snapper.Windows
                 ImGui.PopStyleColor();
             }
 
+            ImGui.Text("Append to existing snapshot");
+            ImGui.SameLine();
+            ImGui.PushFont(UiBuilder.IconFont);
+            try
+            {
+                string addIcon = FontAwesomeIcon.Plus.ToIconString();
+                if(ImGui.Button(addIcon))
+                {
+                    if (player != null)
+                        Plugin.SnapshotManager.AppendSnapshot(player);
+                }
+            }
+            finally
+            {
+                ImGui.PopFont();
+            }
+
             if (this.modifiable)
             {
                 ImGui.Text("Load snapshot onto ");

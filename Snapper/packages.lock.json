@@ -32,15 +32,15 @@
       },
       "Penumbra.Api": {
         "type": "Direct",
-        "requested": "[1.0.5, )",
-        "resolved": "1.0.5",
-        "contentHash": "Ww7tlq68UF2catcu+y05lPtO8BZUElXyd/DSiim3UOAMPPbq0fVgUCR96v6taJuWrplWg9aYJVZXxcI4Pu4k6w=="
+        "requested": "[1.0.7, )",
+        "resolved": "1.0.7",
+        "contentHash": "NVntxQIaBPFyUmnFvIYF4G41i1at2U0efhEnqRSZYRJDxj2N4gmVivjJgjQuHxQlzFTDCCgphN8y/L/+Gr80fA=="
       },
       "Penumbra.String": {
         "type": "Direct",
-        "requested": "[1.0.1, )",
-        "resolved": "1.0.1",
-        "contentHash": "QbyZmC8rh1fwKemikT8IoAzshDkq76cXWZ7Dvctp6CDCW51lpZzKs6sRvGri9IOowWYVRyG9+TgreXJy+lVQJA=="
+        "requested": "[1.0.2, )",
+        "resolved": "1.0.2",
+        "contentHash": "RxybgA87Bglh/xh+HTFKsIjDHIUT6gPI0yGJpimdG+TIH9bREqtFe2GiTKm31fA/sC11Rq0S5SYRBSRYP01Q7A=="
       },
       "lz4net.unsafe.netcore": {
         "type": "Transitive",

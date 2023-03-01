@@ -436,7 +436,7 @@ public class IpcManager : IDisposable
         {
             var collName = TempCollectionPrefix + characterName;
             Logger.Verbose("Removing temp collection for " + collName);
-            var ret = _penumbraRemoveTemporaryMod.Invoke("MaraChara", collName, 0);
+            var ret = _penumbraRemoveTemporaryMod.Invoke("Snap", collName, 0);
             Logger.Verbose("RemoveTemporaryMod: " + ret);
             var ret2 = _penumbraRemoveTemporaryCollection.Invoke(collName);
             Logger.Verbose("RemoveTemporaryCollection: " + ret2);
@@ -497,7 +497,7 @@ public class IpcManager : IDisposable
             Logger.Verbose(mod.Key + " => " + mod.Value);
         }
 
-        var ret2 = _penumbraAddTemporaryMod.Invoke("MareChara", collName, modPaths, manipulationData, 0);
+        var ret2 = _penumbraAddTemporaryMod.Invoke("Snap", collName, modPaths, manipulationData, 0);
         Logger.Verbose("Setting temp mods for " + collName + ", Success: " + ret2);
     }
 
