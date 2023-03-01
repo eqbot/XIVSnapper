@@ -31,6 +31,7 @@ public class IpcManager : IDisposable
     private readonly FuncSubscriber<(int, int)> _penumbraApiVersion;
     private readonly FuncSubscriber<string, PenumbraApiEc> _penumbraCreateNamedTemporaryCollection;
     private readonly FuncSubscriber<string> _penumbraGetMetaManipulations;
+    private readonly FuncSubscriber<int, string> _penumbraGetGameObjectMetaManipulations;
     private readonly EventSubscriber _penumbraInit;
     private readonly EventSubscriber _penumbraDispose;
     private readonly EventSubscriber<nint, int> _penumbraObjectIsRedrawn;
@@ -81,6 +82,7 @@ public class IpcManager : IDisposable
         _penumbraApiVersion = Penumbra.Api.Ipc.ApiVersions.Subscriber(pi);
         _penumbraObjectIsRedrawn = Penumbra.Api.Ipc.GameObjectRedrawn.Subscriber(pi, (ptr, idx) => RedrawEvent((IntPtr)ptr, idx));
         _penumbraGetMetaManipulations = Penumbra.Api.Ipc.GetPlayerMetaManipulations.Subscriber(pi);
+        _penumbraGetGameObjectMetaManipulations = Penumbra.Api.Ipc.GetGameObjectMetaManipulations.Subscriber(pi);
         _penumbraAddTemporaryMod = Penumbra.Api.Ipc.AddTemporaryMod.Subscriber(pi);
         _penumbraCreateNamedTemporaryCollection = Penumbra.Api.Ipc.CreateNamedTemporaryCollection.Subscriber(pi);
         _penumbraRemoveTemporaryCollection = Penumbra.Api.Ipc.RemoveTemporaryCollectionByName.Subscriber(pi);
@@ -401,6 +403,12 @@ public class IpcManager : IDisposable
     {
         if (!CheckPenumbraApi()) return string.Empty;
         return _penumbraGetMetaManipulations.Invoke();
+    }
+
+    public string PenumbraGetGameObjectMetaManipulations(int objIdx)
+    {
+        if (!CheckPenumbraApi()) return string.Empty;
+        return _penumbraGetGameObjectMetaManipulations.Invoke(objIdx);
     }
 
     public string? PenumbraModDirectory()

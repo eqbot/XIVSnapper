@@ -140,7 +140,9 @@ namespace Snapper.Managers
                 replacementFile.CopyTo(fileToCreate.FullName);
                 snapshotInfo.FileReplacements.Add(replacement.GamePaths[0], replacement.GamePaths);
             }
-            
+
+            snapshotInfo.ManipulationString = Plugin.IpcManager.PenumbraGetGameObjectMetaManipulations(character.ObjectIndex);
+
 
             //Get customize+ data, if applicable
             if (Plugin.IpcManager.CheckCustomizePlusApi())
