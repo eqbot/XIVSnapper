@@ -21,7 +21,7 @@ namespace Snapper
     public sealed class Plugin : IDalamudPlugin
     {
         public string Name => "Snapper";
-        private const string CommandName = "/pdump";
+        private const string CommandName = "/psnap";
 
         public DalamudPluginInterface PluginInterface { get; init; }
         private ICommandManager CommandManager { get; init; }
@@ -60,7 +60,7 @@ namespace Snapper
             this.MCDFManager = new MareCharaFileManager(this);
 
             ConfigWindow = new ConfigWindow(this);
-            MainWindow= new MainWindow(this);
+            MainWindow = new MainWindow(this);
             WindowSystem.AddWindow(ConfigWindow);
             WindowSystem.AddWindow(MainWindow);
 

@@ -123,7 +123,7 @@ namespace Snapper.Windows
                 return;
             }
 
-            if (player == null || player.ModelType() == 0)
+            if (player != null || player.ModelType() == 0)
                 DrawPlayerPanel();
             else
                 DrawMonsterPanel();
