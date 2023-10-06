@@ -1,5 +1,6 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Plugin.Services;
 using Dalamud.Interface.ImGuiFileDialog;
 using ImGuiNET;
 using Snapper.Utils;
@@ -18,6 +19,7 @@ namespace Snapper.Windows
     {
         private const uint RedHeaderColor = 0xFF1818C0;
         private const uint GreenHeaderColor = 0xFF18C018;
+        public bool IsInGpose { get; private set; } = false;
 
         private void DrawPlayerHeader()
         {
@@ -45,7 +47,7 @@ namespace Snapper.Windows
             {
                 ImGui.PopFont();
             }
-            if (Plugin.PluginInterface.UiBuilder.GposeActive)
+            if (!IsInGpose)
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
                 ImGui.Text("WARNING: Saving snapshots while GPose is active may result in broken/incorrect snapshots. For best results, leave GPose first.");

@@ -257,7 +257,7 @@ namespace Snapper.Managers
             var human = (Human*)baseCharacter->GameObject.GetDrawObject();
             for (var mdlIdx = 0; mdlIdx < human->CharacterBase.SlotCount; ++mdlIdx)
             {
-                var mdl = (RenderModel*)human->CharacterBase.ModelArray[mdlIdx];
+                var mdl = (RenderModel*)human->CharacterBase.Models[mdlIdx];
                 if (mdl == null || mdl->ResourceHandle == null || mdl->ResourceHandle->Category != ResourceCategory.Chara)
                 {
                     continue;

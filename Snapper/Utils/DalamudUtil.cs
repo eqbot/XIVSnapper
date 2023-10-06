@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
@@ -26,11 +26,11 @@ public delegate void VoidDelegate();
 
 public class DalamudUtil : IDisposable
 {
-    private readonly ClientState _clientState;
-    private readonly ObjectTable _objectTable;
-    private readonly Framework _framework;
-    private readonly Condition _condition;
-    private readonly ChatGui _chatGui;
+    private readonly IClientState _clientState;
+    private readonly IObjectTable _objectTable;
+    private readonly IFramework _framework;
+    private readonly ICondition _condition;
+    private readonly IChatGui _chatGui;
 
     public event LogIn? LogIn;
     public event LogOut? LogOut;
@@ -56,20 +56,20 @@ public class DalamudUtil : IDisposable
         return false;
     }
 
-    public DalamudUtil(ClientState clientState, ObjectTable objectTable, Framework framework, Condition condition, ChatGui chatGui)
+    public DalamudUtil(IClientState clientState, IObjectTable objectTable, IFramework framework, ICondition condition, IChatGui chatGui)
     {
         _clientState = clientState;
         _objectTable = objectTable;
         _framework = framework;
         _condition = condition;
         _chatGui = chatGui;
-        _clientState.Login += ClientStateOnLogin;
-        _clientState.Logout += ClientStateOnLogout;
+        _clientState.Login += OnLogin;
+        _clientState.Logout += OnLogout;
         _framework.Update += FrameworkOnUpdate;
         if (IsLoggedIn)
         {
             classJobId = _clientState.LocalPlayer!.ClassJob.Id;
-            ClientStateOnLogin(null, EventArgs.Empty);
+            OnLogin();
         }
     }
 
@@ -91,7 +91,7 @@ public class DalamudUtil : IDisposable
         _chatGui.Print(se.BuiltString);
     }
 
-    private void FrameworkOnUpdate(Framework framework)
+    private void FrameworkOnUpdate(IFramework framework)
     {
         if (_condition[ConditionFlag.BetweenAreas] || _condition[ConditionFlag.BetweenAreas51] || IsInGpose)
         {
@@ -151,12 +151,12 @@ public class DalamudUtil : IDisposable
         _delayedFrameworkUpdateCheck = DateTime.Now;
     }
 
-    private void ClientStateOnLogout(object? sender, EventArgs e)
+    private void OnLogout()
     {
         LogOut?.Invoke();
     }
 
-    private void ClientStateOnLogin(object? sender, EventArgs e)
+    private void OnLogin()
     {
         LogIn?.Invoke();
     }
@@ -266,8 +266,8 @@ public class DalamudUtil : IDisposable
 
     public void Dispose()
     {
-        _clientState.Login -= ClientStateOnLogin;
-        _clientState.Logout -= ClientStateOnLogout;
+        _clientState.Login -= OnLogin;
+        _clientState.Logout -= OnLogout;
         _framework.Update -= FrameworkOnUpdate;
     }
 }
