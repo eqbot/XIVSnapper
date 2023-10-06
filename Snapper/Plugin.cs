@@ -57,11 +57,12 @@ namespace Snapper
             this.Configuration.Initialize(this.PluginInterface);
 
             this.SnapshotManager = new SnapshotManager(this);
-
             this.MCDFManager = new MareCharaFileManager(this);
 
             ConfigWindow = new ConfigWindow(this);
             MainWindow= new MainWindow(this);
+            WindowSystem.AddWindow(ConfigWindow);
+            WindowSystem.AddWindow(MainWindow);
 
             this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
