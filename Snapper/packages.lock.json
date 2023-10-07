@@ -4,9 +4,9 @@
     "net7.0-windows7.0": {
       "DalamudPackager": {
         "type": "Direct",
-        "requested": "[2.1.10, )",
-        "resolved": "2.1.10",
-        "contentHash": "S6NrvvOnLgT4GDdgwuKVJjbFo+8ZEj+JsEYk9ojjOR/MMfv1dIFpT8aRJQfI24rtDcw1uF+GnSSMN4WW1yt7fw=="
+        "requested": "[2.1.12, )",
+        "resolved": "2.1.12",
+        "contentHash": "Sc0PVxvgg4NQjcI8n10/VfUQBAS4O+Fw2pZrAqBdRMbthYGeogzu5+xmIGCGmsEZ/ukMOBuAqiNiB5qA3MRalg=="
       },
       "lz4net": {
         "type": "Direct",
@@ -32,15 +32,15 @@
       },
       "Penumbra.Api": {
         "type": "Direct",
-        "requested": "[1.0.7, )",
-        "resolved": "1.0.7",
-        "contentHash": "NVntxQIaBPFyUmnFvIYF4G41i1at2U0efhEnqRSZYRJDxj2N4gmVivjJgjQuHxQlzFTDCCgphN8y/L/+Gr80fA=="
+        "requested": "[1.0.11, )",
+        "resolved": "1.0.11",
+        "contentHash": "MscPf7uEoe2Dza09mZD8CqDhfSBr3hcwH15jTTQTStfyTnAVLPGRLPIhYM2aC83Qt1blE855xO9O2ox9mV2K2Q=="
       },
       "Penumbra.String": {
         "type": "Direct",
-        "requested": "[1.0.2, )",
-        "resolved": "1.0.2",
-        "contentHash": "RxybgA87Bglh/xh+HTFKsIjDHIUT6gPI0yGJpimdG+TIH9bREqtFe2GiTKm31fA/sC11Rq0S5SYRBSRYP01Q7A=="
+        "requested": "[1.0.4, )",
+        "resolved": "1.0.4",
+        "contentHash": "fva7Nk0HzQj85FMplx9bwN9BCZnHvdKHlMrvtkekXJeyKfiivRNHnTe9jhSEASgYXqOLsdV9PzJgq7EblN5+Rg=="
       },
       "lz4net.unsafe.netcore": {
         "type": "Transitive",

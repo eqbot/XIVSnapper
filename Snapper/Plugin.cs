@@ -1,6 +1,7 @@
 using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using System.IO;
 using System.Reflection;
 using Dalamud.Interface.Windowing;
@@ -23,9 +24,9 @@ namespace Snapper
         private const string CommandName = "/psnap";
 
         public DalamudPluginInterface PluginInterface { get; init; }
-        private CommandManager CommandManager { get; init; }
+        private ICommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
-        public ObjectTable Objects { get; init; }
+        public IObjectTable Objects { get; init; }
         public WindowSystem WindowSystem = new("Snapper");
         public FileDialogManager FileDialogManager = new FileDialogManager();
         public DalamudUtil DalamudUtil { get; init; }
@@ -33,15 +34,17 @@ namespace Snapper
         public SnapshotManager SnapshotManager { get; init; }
         public MareCharaFileManager MCDFManager { get; init; }
 
+        private ConfigWindow ConfigWindow { get; init; }
+        private MainWindow MainWindow { get; init; }
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] CommandManager commandManager,
-            [RequiredVersion("1.0")] Framework framework,
-            [RequiredVersion("1.0")] ObjectTable objectTable,
-            [RequiredVersion("1.0")] ClientState clientState,
-            [RequiredVersion("1.0")] Condition condition,
-            [RequiredVersion("1.0")] ChatGui chatGui)
+            [RequiredVersion("1.0")] ICommandManager commandManager,
+            [RequiredVersion("1.0")] IFramework framework,
+            [RequiredVersion("1.0")] IObjectTable objectTable,
+            [RequiredVersion("1.0")] IClientState clientState,
+            [RequiredVersion("1.0")] ICondition condition,
+            [RequiredVersion("1.0")] IChatGui chatGui)
         {
             this.PluginInterface = pluginInterface;
             this.CommandManager = commandManager;
@@ -54,11 +57,12 @@ namespace Snapper
             this.Configuration.Initialize(this.PluginInterface);
 
             this.SnapshotManager = new SnapshotManager(this);
-
             this.MCDFManager = new MareCharaFileManager(this);
 
-            WindowSystem.AddWindow(new ConfigWindow(this));
-            WindowSystem.AddWindow(new MainWindow(this));
+            ConfigWindow = new ConfigWindow(this);
+            MainWindow = new MainWindow(this);
+            WindowSystem.AddWindow(ConfigWindow);
+            WindowSystem.AddWindow(MainWindow);
 
             this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
@@ -80,7 +84,7 @@ namespace Snapper
         private void OnCommand(string command, string args)
         {
             // in response to the slash command, just display our main ui
-            WindowSystem.GetWindow("Snapper").IsOpen = true;
+            MainWindow.IsOpen = true;
         }
 
         private void DrawUI()
@@ -91,7 +95,7 @@ namespace Snapper
 
         public void DrawConfigUI()
         {
-            WindowSystem.GetWindow("Snapper Settings").IsOpen = true;
+            ConfigWindow.IsOpen = true;
         }
     }
 }

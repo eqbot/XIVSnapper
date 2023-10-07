@@ -1,6 +1,6 @@
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -29,6 +29,7 @@ namespace Snapper.Windows
         private readonly Dictionary<string, int> playerNames = new(100);
         private readonly Dictionary<string, Character?> gPoseActors = new(CharacterScreenIndex - GPoseObjectId);
 
+        private IPluginLog PluginLog { get; init; }
         private void DrawPlayerFilter()
         {
             using var raii = new ImGuiRaii()
