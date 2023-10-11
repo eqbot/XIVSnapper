@@ -62,7 +62,7 @@ namespace Snapper.PMP
             {
                 foreach(var replacement in file.Value)
                 {
-                    defaultMod.Files.Add(file.Key, replacement);
+                    defaultMod.Files.Add(replacement, file.Key);
                 }
             }
 
