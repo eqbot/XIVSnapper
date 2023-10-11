@@ -67,6 +67,23 @@ public partial class MainWindow : Window, IDisposable
             }, 1, Plugin.Configuration.WorkingDirectory);
         }
 
+        ImGui.SameLine();
+        if(ImGui.Button("Export snapshot as PMP"))
+        {
+            Plugin.FileDialogManager.OpenFolderDialog("Snapshot selection", (status, path) =>
+            {
+                if (!status)
+                {
+                    return;
+                }
+
+                if (Directory.Exists(path))
+                {
+                    Plugin.PMPExportManager.SnapshotToPMP(path);
+                }
+            }, Plugin.Configuration.WorkingDirectory);
+        }
+
         ImGui.Spacing();
 
         this.DrawPlayerSelector();
