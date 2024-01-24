@@ -380,9 +380,6 @@ public class IpcManager : IDisposable
             {
                 var glamourerString = _glamourerGetAllCustomization!.InvokeFunc(c);
                 byte[] bytes = Convert.FromBase64String(glamourerString);
-                // ignore transparency
-                bytes[88] = 128;
-                bytes[89] = 63;
                 return Convert.ToBase64String(bytes);
             }
             return string.Empty;
