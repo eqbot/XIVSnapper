@@ -34,22 +34,9 @@ public class IpcManager : IDisposable
     private readonly ICallGateSubscriber<string, GameObject?, object>? _glamourerApplyOnlyEquipment;
     private readonly ICallGateSubscriber<string, GameObject?, object>? _glamourerApplyOnlyCustomization;
 
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<(int, int)> _penumbraApiVersion;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, PenumbraApiEc> _penumbraCreateNamedTemporaryCollection;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string> _penumbraGetMetaManipulations;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<int, string> _penumbraGetGameObjectMetaManipulations;
     private readonly Penumbra.Api.Helpers.EventSubscriber _penumbraInit;
     private readonly Penumbra.Api.Helpers.EventSubscriber _penumbraDispose;
     private readonly Penumbra.Api.Helpers.EventSubscriber<nint, int> _penumbraObjectIsRedrawn;
-    //private readonly Penumbra.Api.Helpers.ActionSubscriber<int, RedrawType> _penumbraRedraw;
-    //private readonly Penumbra.Api.Helpers.ActionSubscriber<GameObject, RedrawType> _penumbraRedrawObject;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, PenumbraApiEc> _penumbraRemoveTemporaryCollection;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, string, int, PenumbraApiEc> _penumbraRemoveTemporaryMod;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, int, bool, PenumbraApiEc> _penumbraAssignTemporaryCollection;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, int, string> _penumbraResolvePlayerObject;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, int, string[]> _penumbraReverseResolvePlayerObject;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, string[]> _reverseResolvePlayer;
-    //private readonly Penumbra.Api.Helpers.FuncSubscriber<string, string, Dictionary<string, string>, string, int, PenumbraApiEc> _penumbraAddTemporaryMod;
     private readonly Penumbra.Api.Helpers.EventSubscriber<nint, string, string> _penumbraGameObjectResourcePathResolved;
     private readonly Penumbra.Api.Helpers.EventSubscriber<ModSettingChange, Guid, string, bool> _penumbraModSettingChanged;
 
