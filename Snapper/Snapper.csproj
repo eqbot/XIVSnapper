@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Platforms>x64</Platforms>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -31,9 +31,10 @@
 
     <ItemGroup>
         <PackageReference Include="DalamudPackager" Version="2.1.12" />
+        <PackageReference Include="Glamourer.Api" Version="2.0.1" />
         <PackageReference Include="lz4net" Version="1.0.15.93" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-        <PackageReference Include="Penumbra.Api" Version="1.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+        <PackageReference Include="Penumbra.Api" Version="5.1.0" />
         <PackageReference Include="Penumbra.String" Version="1.0.4" />
     </ItemGroup>
 

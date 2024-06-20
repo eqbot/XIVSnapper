@@ -212,6 +212,9 @@ namespace Snapper.Managers
             //Apply glamourer string
             Plugin.IpcManager.GlamourerApplyAll(snapshotInfo.GlamourerString, characterApplyTo);
 
+            //Redraw
+            Plugin.IpcManager.PenumbraRedraw(objIdx);
+
             return true;
         }
 
