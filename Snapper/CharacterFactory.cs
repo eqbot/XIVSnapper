@@ -12,22 +12,22 @@ namespace Snapper
 
         private static void Initialize()
         {
-            _characterConstructor ??= typeof( Character ).GetConstructor( BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
+            _characterConstructor ??= typeof( ICharacter ).GetConstructor( BindingFlags.NonPublic | BindingFlags.Instance, null, new[]
             {
                 typeof( IntPtr ),
             }, null )!;
         }
 
-        private static Character Character( IntPtr address )
+        private static ICharacter Character( IntPtr address )
         {
             Initialize();
-            return ( Character )_characterConstructor?.Invoke( new object[]
+            return (ICharacter)_characterConstructor?.Invoke( new object[]
             {
                 address,
             } )!;
         }
 
-        public static Character? Convert( GameObject? actor )
+        public static ICharacter? Convert( IGameObject? actor )
         {
             if( actor == null )
             {
@@ -36,8 +36,8 @@ namespace Snapper
 
             return actor switch
             {
-                PlayerCharacter p => p,
-                BattleChara b     => b,
+                IPlayerCharacter p => p,
+                IBattleChara b     => b,
                 _ => actor.ObjectKind switch
                 {
                     ObjectKind.BattleNpc => Character( actor.Address ),
@@ -54,10 +54,10 @@ namespace Snapper
     {
         private const int ModelTypeOffset = 0x01B4;
 
-        public static unsafe int ModelType( this GameObject actor )
+        public static unsafe int ModelType( this IGameObject actor )
             => *( int* )( actor.Address + ModelTypeOffset );
 
-        public static unsafe void SetModelType( this GameObject actor, int value )
+        public static unsafe void SetModelType( this IGameObject actor, int value )
             => *( int* )( actor.Address + ModelTypeOffset ) = value;
     }
 }

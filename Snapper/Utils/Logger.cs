@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ internal class Logger : ILogger
     public static void Info(string info)
     {
         var caller = new StackTrace().GetFrame(1)?.GetMethod()?.ReflectedType?.Name ?? "Unknown";
-        PluginLog.Information($"[{caller}] {info}");
+        Plugin.Log.Information($"[{caller}] {info}", "");
     }
 
     public static void Debug(string debug, string stringToHighlight = "")
@@ -22,45 +23,45 @@ internal class Logger : ILogger
         var caller = new StackTrace().GetFrame(1)?.GetMethod()?.ReflectedType?.Name ?? "Unknown";
         if (debug.Contains(stringToHighlight, StringComparison.Ordinal) && !stringToHighlight.IsNullOrEmpty())
         {
-            PluginLog.Warning($"[{caller}] {debug}");
+            Plugin.Log.Warning($"[{caller}] {debug}");
         }
         else
         {
-            PluginLog.Debug($"[{caller}] {debug}");
+            Plugin.Log.Debug($"[{caller}] {debug}");
         }
     }
 
     public static void Error(string msg, Exception ex)
     {
         var caller = new StackTrace().GetFrame(1)?.GetMethod()?.ReflectedType?.Name ?? "Unknown";
-        PluginLog.Error($"[{caller}] {msg} {Environment.NewLine} Exception: {ex.Message} {Environment.NewLine} {ex.StackTrace}");
+        Plugin.Log.Error($"[{caller}] {msg} {Environment.NewLine} Exception: {ex.Message} {Environment.NewLine} {ex.StackTrace}");
     }
 
     public static void Warn(string msg, Exception ex)
     {
         var caller = new StackTrace().GetFrame(1)?.GetMethod()?.ReflectedType?.Name ?? "Unknown";
-        PluginLog.Warning($"[{caller}] {msg} {Environment.NewLine} Exception: {ex.Message} {Environment.NewLine} {ex.StackTrace}");
+        Plugin.Log.Warning($"[{caller}] {msg} {Environment.NewLine} Exception: {ex.Message} {Environment.NewLine} {ex.StackTrace}");
     }
 
     public static void Error(string msg)
     {
         var caller = new StackTrace().GetFrame(1)?.GetMethod()?.ReflectedType?.Name ?? "Unknown";
-        PluginLog.Error($"[{caller}] {msg}");
+        Plugin.Log.Error($"[{caller}] {msg}");
     }
 
     public static void Warn(string warn)
     {
         var caller = new StackTrace().GetFrame(1)?.GetMethod()?.ReflectedType?.Name ?? "Unknown";
-        PluginLog.Warning($"[{caller}] {warn}");
+        Plugin.Log.Warning($"[{caller}] {warn}");
     }
 
     public static void Verbose(string verbose)
     {
         var caller = new StackTrace().GetFrame(1)?.GetMethod()?.ReflectedType?.Name ?? "Unknown";
 #if DEBUG
-        PluginLog.Debug($"[{caller}] {verbose}");
+        Plugin.Log.Debug($"[{caller}] {verbose}");
 #else
-        PluginLog.Verbose($"[{caller}] {verbose}");
+        Plugin.Log.Verbose($"[{caller}] {verbose}");
 #endif
     }
     public Logger(string name)
@@ -74,24 +75,24 @@ internal class Logger : ILogger
         switch (logLevel)
         {
             case LogLevel.Debug:
-                PluginLog.Debug($"[{name}] [{eventId}] {formatter(state, exception)}");
+                Plugin.Log.Debug($"[{name}] [{eventId}] {formatter(state, exception)}");
                 break;
             case LogLevel.Error:
             case LogLevel.Critical:
-                PluginLog.Error($"[{name}] [{eventId}] {formatter(state, exception)}");
+                Plugin.Log.Error($"[{name}] [{eventId}] {formatter(state, exception)}");
                 break;
             case LogLevel.Information:
-                PluginLog.Information($"[{name}] [{eventId}] {formatter(state, exception)}");
+                Plugin.Log.Information($"[{name}] [{eventId}] {formatter(state, exception)}");
                 break;
             case LogLevel.Warning:
-                PluginLog.Warning($"[{name}] [{eventId}] {formatter(state, exception)}");
+                Plugin.Log.Warning($"[{name}] [{eventId}] {formatter(state, exception)}");
                 break;
             case LogLevel.Trace:
             default:
 #if DEBUG
-                PluginLog.Verbose($"[{name}] [{eventId}] {formatter(state, exception)}");
+                Plugin.Log.Verbose($"[{name}] [{eventId}] {formatter(state, exception)}");
 #else
-                PluginLog.Verbose($"[{name}] {eventId} {state} {formatter(state, exception)}");
+                Plugin.Log.Verbose($"[{name}] {eventId} {state} {formatter(state, exception)}");
 #endif
                 break;
         }

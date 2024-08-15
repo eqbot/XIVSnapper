@@ -25,7 +25,7 @@ namespace Snapper.Managers
     public class SnapshotManager
     {
         private Plugin Plugin;
-        private List<Character> tempCollections = new();
+        private List<ICharacter> tempCollections = new();
 
         public SnapshotManager(Plugin plugin)
         {
@@ -44,7 +44,7 @@ namespace Snapper.Managers
             tempCollections.Clear();
         }
 
-        public bool AppendSnapshot(Character character)
+        public bool AppendSnapshot(ICharacter character)
         {
             var charaName = character.Name.TextValue;
             var path = Path.Combine(Plugin.Configuration.WorkingDirectory, charaName);
@@ -111,7 +111,7 @@ namespace Snapper.Managers
             return true;
         }
 
-        public bool SaveSnapshot(Character character)
+        public bool SaveSnapshot(ICharacter character)
         {
             var charaName = character.Name.TextValue;
             var path = Path.Combine(Plugin.Configuration.WorkingDirectory,charaName);
@@ -165,7 +165,7 @@ namespace Snapper.Managers
             return true;
         }
 
-        public bool LoadSnapshot(Character characterApplyTo, int objIdx, string path)
+        public bool LoadSnapshot(ICharacter characterApplyTo, int objIdx, string path)
         {
             Logger.Info($"Applying snapshot to {characterApplyTo.Address}");
             string infoJson = File.ReadAllText(Path.Combine(path,"snapshot.json"));
@@ -218,12 +218,12 @@ namespace Snapper.Managers
             return true;
         }
 
-        private int? GetObjIDXFromCharacter(Character character)
+        private int? GetObjIDXFromCharacter(ICharacter character)
         {
             for (var i = 0; i <= Plugin.Objects.Length; i++)
             {
-                global::Dalamud.Game.ClientState.Objects.Types.GameObject current = Plugin.Objects[i];
-                if (!(current == null) && current.ObjectId == character.ObjectId)
+                global::Dalamud.Game.ClientState.Objects.Types.IGameObject current = Plugin.Objects[i];
+                if (!(current == null) && current.GameObjectId == character.GameObjectId)
                 {
                     return i;
                 }
@@ -231,7 +231,7 @@ namespace Snapper.Managers
             return null;
         }
 
-        public unsafe List<FileReplacement> GetFileReplacementsForCharacter(Character character)
+        public unsafe List<FileReplacement> GetFileReplacementsForCharacter(ICharacter character)
         {
             List<FileReplacement> replacements = new List<FileReplacement>();
             var charaPointer = character.Address;

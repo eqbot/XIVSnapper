@@ -15,7 +15,7 @@ using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 namespace Snapper.Utils;
 
-public delegate void PlayerChange(Dalamud.Game.ClientState.Objects.Types.Character actor);
+public delegate void PlayerChange(Dalamud.Game.ClientState.Objects.Types.ICharacter actor);
 
 public delegate void LogIn();
 public delegate void LogOut();
@@ -161,7 +161,7 @@ public class DalamudUtil : IDisposable
         LogIn?.Invoke();
     }
 
-    public Dalamud.Game.ClientState.Objects.Types.GameObject? CreateGameObject(IntPtr reference)
+    public Dalamud.Game.ClientState.Objects.Types.IGameObject? CreateGameObject(IntPtr reference)
     {
         return _objectTable.CreateObjectReference(reference);
     }
@@ -170,7 +170,7 @@ public class DalamudUtil : IDisposable
 
     public bool IsPlayerPresent => _clientState.LocalPlayer != null && _clientState.LocalPlayer.IsValid();
 
-    public bool IsObjectPresent(Dalamud.Game.ClientState.Objects.Types.GameObject? obj)
+    public bool IsObjectPresent(Dalamud.Game.ClientState.Objects.Types.IGameObject? obj)
     {
         return obj != null && obj.IsValid();
     }
@@ -198,30 +198,30 @@ public class DalamudUtil : IDisposable
 
     public IntPtr PlayerPointer => _clientState.LocalPlayer?.Address ?? IntPtr.Zero;
 
-    public PlayerCharacter PlayerCharacter => _clientState.LocalPlayer!;
+    public IPlayerCharacter PlayerCharacter => _clientState.LocalPlayer!;
 
     public bool IsInGpose => _objectTable[201] != null;
 
-    public List<PlayerCharacter> GetPlayerCharacters()
+    public List<IPlayerCharacter> GetPlayerCharacters()
     {
         return _objectTable.Where(obj =>
             obj.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Player &&
-            !string.Equals(obj.Name.ToString(), PlayerName, StringComparison.Ordinal)).Select(p => (PlayerCharacter)p).ToList();
+            !string.Equals(obj.Name.ToString(), PlayerName, StringComparison.Ordinal)).Select(p => (IPlayerCharacter)p).ToList();
     }
 
-    public Dalamud.Game.ClientState.Objects.Types.Character? GetCharacterFromObjectTableByIndex(int index)
+    public Dalamud.Game.ClientState.Objects.Types.ICharacter? GetCharacterFromObjectTableByIndex(int index)
     {
         var objTableObj = _objectTable[index];
         if (objTableObj!.ObjectKind != Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Player) return null;
-        return (Dalamud.Game.ClientState.Objects.Types.Character)objTableObj;
+        return (Dalamud.Game.ClientState.Objects.Types.ICharacter)objTableObj;
     }
 
-    public PlayerCharacter? GetPlayerCharacterFromObjectTableByName(string characterName)
+    public IPlayerCharacter? GetPlayerCharacterFromObjectTableByName(string characterName)
     {
         foreach (var item in _objectTable)
         {
             if (item.ObjectKind != Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Player) continue;
-            if (string.Equals(item.Name.ToString(), characterName, StringComparison.Ordinal)) return (PlayerCharacter)item;
+            if (string.Equals(item.Name.ToString(), characterName, StringComparison.Ordinal)) return (IPlayerCharacter)item;
         }
 
         return null;

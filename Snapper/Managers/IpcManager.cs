@@ -12,13 +12,14 @@ using Snapper.Utils;
 using System.Security;
 using Glamourer.Api.Helpers;
 using Penumbra.Api.IpcSubscribers;
-using Dalamud.Interface.Internal.Notifications;
 using System.Linq;
 //using Penumbra.Api.IpcSubscribers.Legacy;
 //using Glamourer.Api.IpcSubscribers.Legacy;
 using Microsoft.Extensions.Logging;
 using Glamourer.Api.IpcSubscribers;
 using Glamourer.Api.Enums;
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using Dalamud.Utility;
 
 namespace Snapper.Managers;
 
@@ -26,14 +27,19 @@ public delegate void PenumbraRedrawEvent(IntPtr address, int objTblIdx);
 public delegate void HeelsOffsetChange(float change);
 public delegate void PenumbraResourceLoadEvent(IntPtr drawObject, string gamePath, string filePath);
 public delegate void CustomizePlusScaleChange(string? scale);
+
+
+
+
 public class IpcManager : IDisposable
 {
-    private readonly DalamudPluginInterface _pi;
+    private readonly IDalamudPluginInterface _pi;
     private const string TempCollectionPrefix = "Snap_";
 
     private readonly Glamourer.Api.IpcSubscribers.ApiVersion _glamourerApiVersion;
     private readonly ApplyState _glamourerApplyAll;
     private readonly GetStateBase64 _glamourerGetAllCustomization;
+    private readonly GetStateBase64Name _glamourerGetAllCustomizationName;
     private readonly RevertState _glamourerRevertCustomization;
 
     private readonly Penumbra.Api.Helpers.EventSubscriber _penumbraInit;
@@ -60,18 +66,21 @@ public class IpcManager : IDisposable
     private readonly ICallGateSubscriber<string> _customizePlusApiVersion;
     private readonly ICallGateSubscriber<string> _customizePlusBranch;
     private readonly ICallGateSubscriber<string, string> _customizePlusGetBodyScale;
-    private readonly ICallGateSubscriber<Character?, string> _customizePlusGetBodyScaleFromCharacter; 
-    private readonly ICallGateSubscriber<string, Character?, object> _customizePlusSetBodyScaleToCharacter;
-    private readonly ICallGateSubscriber<Character?, object> _customizePlusRevert;
+    private readonly ICallGateSubscriber<ICharacter?, string> _customizePlusGetBodyScaleFromCharacter; 
+    private readonly ICallGateSubscriber<string, ICharacter?, object> _customizePlusSetBodyScaleToCharacter;
+    private readonly ICallGateSubscriber<ICharacter?, object> _customizePlusRevert;
     private readonly ICallGateSubscriber<string?, object> _customizePlusOnScaleUpdate;
 
     private readonly DalamudUtil _dalamudUtil;
     private readonly ConcurrentQueue<Action> actionQueue = new();
 
-    public IpcManager(DalamudPluginInterface pi, DalamudUtil dalamudUtil)
+    private Configuration _configuration;
+    private string backupBase64 = "Bh+LCAAAAAAAAArEV9ly2jAU/Rc/Mxkv8pa3hoRAJ6QZoMmzAhfQRNiuJSdDM/n3XsmYeMNl2nr6Joujc+7mY/FujBiHR0gFiyPj0hoYNz8yluwgksbluzGlLBrTaKXWEwm7Ca4cYrr2wBimIBCzplzAwPiSJHxvXMo0Kx7mEs9WdqonDr+bh5WNy4+B8W29rusROySh54WW9Rei+U675hhoi6BveaQnwat4tS8L2mHg95UbFlNUuufapK/m3cGmquWYZl9aIwBZ0fLd3vK6oaloGxA36EvxHpYvrYp+X4pPKROyPUuvL83ZiEUbSFtF3d6G9H+Ijqke1vk2fquczR8Q8MhEnMckFvFmw2HVjnsCmiijLriacX5og4ky3ctbToUAvdR7KluzAR9mQsY79hO05ccr4AfcjC713iPlGS6c40ktiydvIVrltTxAauS51y32SZnGqmPGwDZbWUYo36hihpxGJYRb/31UDbWpQVkq5J53gzAOrmIRZZQd1HHzFxYNY553rIApD6/CbvagUbN6ek7QFl6d0fNPx9dQJy0FYZSPgMosBaurRRUkDuyZSOdsJDkb6Z6N9M5G+l1I/GTR5X5BpYzjLlyOqFfdbOn4cxq/Vcbn1FTcwfo3Q4HI+ZYm7a9gMYo7yvkEzbsrrPtYdM79V/rWdXwaZ3LbWUWWCMnyT9bptwZRjbH1m2KZWHKYom9194Pxem0ar8AV+tr8YGsdowIPaNTlVpwGzeAVr8rKnM8AN5JtluQJZASVTKuGnvssAh9oSncgUVxhjxLfX6cZlyzhrOLC1oXZsOrSGbxki/z2VOTQgs/7sIgjXb4HSJf4n4BuTrCrYb5ju2fKJ5GESDC5rx9rE9HO+AfnlAFfs/U6y+d6pjpiXniBjdfbEO8rtymA+gpfuIHphDb+Xbk6JOqaodpyG5TKgZuUvuPbLglLjJ7pB8SxvE9KojlJK+PRsUucrmmFnhmUOImOm5TCdCzfI77ptxYafaFE52hkOWmHWOp48EnntVf+XxAdXPY47EXhGmTHnYLruFFPkSXNRhCsOfaiTGjnncDCF4xYwC882VK9PtGVa1hSXo82tE1H3eaP3MVGwVw8H+ktPVhqDOqv6pTia4qfH/Wmfnz8AgAA//8=";
+
+    public IpcManager(IDalamudPluginInterface pi, DalamudUtil dalamudUtil)
     {
         Logger.Verbose("Creating " + nameof(IpcManager));
-
+        _configuration = (Configuration?)pi.GetPluginConfig();
         _pi = pi;
 
         _penumbraInit = Penumbra.Api.IpcSubscribers.Initialized.Subscriber(pi, () => PenumbraInit());
@@ -97,6 +106,8 @@ public class IpcManager : IDisposable
 
         _glamourerApiVersion = new Glamourer.Api.IpcSubscribers.ApiVersion(pi);
         _glamourerGetAllCustomization = new GetStateBase64(pi);
+        _glamourerGetAllCustomizationName = new GetStateBase64Name(pi);
+
         _glamourerApplyAll = new ApplyState(pi);
         _glamourerRevertCustomization = new RevertState(pi);
 
@@ -104,9 +115,9 @@ public class IpcManager : IDisposable
         _customizePlusApiVersion = pi.GetIpcSubscriber<string>("CustomizePlus.GetApiVersion");
         _customizePlusBranch = pi.GetIpcSubscriber<string>("CustomizePlus.GetBranch");
         _customizePlusGetBodyScale = pi.GetIpcSubscriber<string, string>("CustomizePlus.GetTemporaryScale");
-        _customizePlusGetBodyScaleFromCharacter = pi.GetIpcSubscriber<Character?, string>("CustomizePlus.GetBodyScaleFromCharacter");
-        _customizePlusRevert = pi.GetIpcSubscriber<Character?, object>("CustomizePlus.RevertCharacter");
-        _customizePlusSetBodyScaleToCharacter = pi.GetIpcSubscriber<string, Character?, object>("CustomizePlus.SetBodyScaleToCharacter");
+        _customizePlusGetBodyScaleFromCharacter = pi.GetIpcSubscriber<ICharacter?, string>("CustomizePlus.GetBodyScaleFromCharacter");
+        _customizePlusRevert = pi.GetIpcSubscriber<ICharacter?, object>("CustomizePlus.RevertCharacter");
+        _customizePlusSetBodyScaleToCharacter = pi.GetIpcSubscriber<string, ICharacter?, object>("CustomizePlus.SetBodyScaleToCharacter");
         _customizePlusOnScaleUpdate = pi.GetIpcSubscriber<string?, object>("CustomizePlus.OnScaleUpdate");
 
         _customizePlusOnScaleUpdate.Subscribe(OnCustomizePlusScaleChange);
@@ -119,6 +130,7 @@ public class IpcManager : IDisposable
         _dalamudUtil = dalamudUtil;
         _dalamudUtil.FrameworkUpdate += HandleActionQueue;
         _dalamudUtil.ZoneSwitchEnd += ClearActionQueue;
+
     }
 
     private void PenumbraModSettingChangedHandler()
@@ -250,10 +262,10 @@ public class IpcManager : IDisposable
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(scale));
     }
 
-    public string GetCustomizePlusScaleFromCharacter(Character character)
+    public string GetCustomizePlusScaleFromCharacter(ICharacter character)
     {
         if (!CheckCustomizePlusApi()) return string.Empty;
-        var scale = _customizePlusGetBodyScale.InvokeFunc(character.Name.TextValue);
+        var scale = _customizePlusGetBodyScale.InvokeFunc(character.Name.ToString());
         if (string.IsNullOrEmpty(scale))
         {
             Logger.Debug("C+ returned null");
@@ -268,7 +280,7 @@ public class IpcManager : IDisposable
         actionQueue.Enqueue(() =>
         {
             var gameObj = _dalamudUtil.CreateGameObject(character);
-            if (gameObj is Character c)
+            if (gameObj is ICharacter c)
             {
                 Logger.Verbose("CustomizePlus applying for " + c.Address.ToString("X"));
                 _customizePlusSetBodyScaleToCharacter!.InvokeAction(scale, c);
@@ -282,7 +294,7 @@ public class IpcManager : IDisposable
         actionQueue.Enqueue(() =>
         {
             var gameObj = _dalamudUtil.CreateGameObject(character);
-            if (gameObj is Character c)
+            if (gameObj is ICharacter c)
             {
                 Logger.Verbose("CustomizePlus reverting for " + c.Address.ToString("X"));
                 _customizePlusRevert!.InvokeAction(c);
@@ -290,7 +302,7 @@ public class IpcManager : IDisposable
         });
     }
 
-    public void GlamourerApplyAll(string? customization, Character obj)
+    public void GlamourerApplyAll(string? customization, ICharacter obj)
     {
         if (!CheckGlamourerApi() || string.IsNullOrEmpty(customization)) return;
         Logger.Verbose("Glamourer applying for " + obj.Address.ToString("X"));
@@ -299,32 +311,54 @@ public class IpcManager : IDisposable
 
     public string GlamourerGetCharacterCustomization(IntPtr character)
     {
+        object temp = "";
+        object tempGameObj = "";
         Logger.Debug("Getting character customization");
         if (!CheckGlamourerApi()) return string.Empty;
         try
         {
             var gameObj = _dalamudUtil.CreateGameObject(character);
-            if (gameObj is Character c)
+            if (gameObj is ICharacter c)
             {
+                Logger.Debug($"Attempting to get customizations for {c.Name} with ObjectIndex {c.ObjectIndex}");
                 (GlamourerApiEc apiec, string glamourerString) = _glamourerGetAllCustomization!.Invoke(c.ObjectIndex);
+                temp = glamourerString;
+                tempGameObj = c.Name;
                 Logger.Debug($"Got glamourer customizations {glamourerString} for {c.Name}");
-                byte[] bytes = Convert.FromBase64String(glamourerString);
+                if (glamourerString.IsNullOrEmpty())
+                {
+                    glamourerString = _configuration.FallBackGlamourerString;
+                }
+
+                byte[] bytes;
+
+                try
+                {
+                    bytes = Convert.FromBase64String(glamourerString);
+                }
+                catch
+                {
+                    //if your backup string is not valid, you are getting my shitty lala.
+                    bytes = Convert.FromBase64String(backupBase64);
+                }
+                
                 return Convert.ToBase64String(bytes);
             }
+            Logger.Warn("Game object is not an ICharacter or could not retrieve customization data.");
             return string.Empty;
         }
-        catch
+        catch (Exception ex)
         {
-            Logger.Error("Error occured while getting customizations");
+            Logger.Error($"Error occurred while getting customizations for {tempGameObj}. GlamourerString = '{temp}', Exception: {ex.Message}");
             throw;
             return string.Empty;
         }
     }
 
-    public void GlamourerRevertCharacterCustomization(GameObject character)
+    public void GlamourerRevertCharacterCustomization(IGameObject character)
     {
         if (!CheckGlamourerApi()) return;
-        if(character is Character c)
+        if(character is ICharacter c)
         {
             actionQueue.Enqueue(() => _glamourerRevertCustomization!.Invoke(c.ObjectIndex));
         }
@@ -410,7 +444,7 @@ public class IpcManager : IDisposable
         return resolvedPaths;
     }
 
-    public void PenumbraSetTemporaryMods(Character character, int? idx, Dictionary<string, string> modPaths, string manipulationData)
+    public void PenumbraSetTemporaryMods(ICharacter character, int? idx, Dictionary<string, string> modPaths, string manipulationData)
     {
         if (!CheckPenumbraApi()) return;
         if (idx == null)

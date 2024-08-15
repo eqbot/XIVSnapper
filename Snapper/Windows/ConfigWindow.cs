@@ -13,17 +13,20 @@ public class ConfigWindow : Window, IDisposable
     private Configuration Configuration;
     private FileDialogManager FileDialogManager;
 
+    //ImGuiWindowFlags.NoResize
     public ConfigWindow(Plugin plugin) : base(
         "Snapper Settings",
-        ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
-        ImGuiWindowFlags.NoScrollWithMouse)
+         ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
+        ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoResize)
     {
-        this.Size = new Vector2(500, 75);
+        this.Size = new Vector2(500, 115);
         this.SizeCondition = ImGuiCond.Always;
 
         this.Configuration = plugin.Configuration;
         this.FileDialogManager = plugin.FileDialogManager;
     }
+
+    private string _singleLineText = "This is a long line of text that should word-wrap inside the text box based on the width you specify.";
 
     public void Dispose() { }
 
@@ -51,5 +54,15 @@ public class ConfigWindow : Window, IDisposable
             });
         }
         ImGui.PopFont();
+
+        
+        ImGui.Text("Glamourer design fallback string (Temp until GlamourerAPI workaround)");
+        string fallbackString = Configuration.FallBackGlamourerString;
+        ImGui.InputText("##input-format", ref fallbackString, 2500);
+        if (fallbackString != Configuration.FallBackGlamourerString)
+        {
+            Configuration.FallBackGlamourerString = fallbackString;
+            Configuration.Save();
+        }
     }
 }

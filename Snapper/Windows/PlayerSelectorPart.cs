@@ -22,12 +22,12 @@ namespace Snapper.Windows
         private string playerFilter = string.Empty;
         private string playerFilterLower = string.Empty;
         private string currentLabel = string.Empty;
-        private Character? player;
+        private ICharacter? player;
         private bool modifiable = false;
         private int? objIdxSelected;
-        private Character? playerSelected;
+        private ICharacter? playerSelected;
         private readonly Dictionary<string, int> playerNames = new(100);
-        private readonly Dictionary<string, Character?> gPoseActors = new(CharacterScreenIndex - GPoseObjectId);
+        private readonly Dictionary<string, ICharacter?> gPoseActors = new(CharacterScreenIndex - GPoseObjectId);
 
         private IPluginLog PluginLog { get; init; }
         private void DrawPlayerFilter()
@@ -40,7 +40,7 @@ namespace Snapper.Windows
                 playerFilterLower = playerFilter.ToLowerInvariant();
         }
 
-        private void DrawGPoseSelectable(Character player, int objIdx)
+        private void DrawGPoseSelectable(ICharacter player, int objIdx)
         {
             var playerName = player.Name.ToString();
             if (!playerName.Any())
@@ -51,7 +51,7 @@ namespace Snapper.Windows
             DrawSelectable(player, $"{playerName} (GPose)", true, objIdx);
         }
 
-        private void DrawSelectable(Character player, string label, bool modifiable, int objIdx)
+        private void DrawSelectable(ICharacter player, string label, bool modifiable, int objIdx)
         {
             if (!playerFilterLower.Any() || label.ToLowerInvariant().Contains(playerFilterLower))
                 if (ImGui.Selectable(label, currentLabel == label))
@@ -78,7 +78,7 @@ namespace Snapper.Windows
             }
         }
 
-        private void DrawPlayerSelectable(Character player, int idx)
+        private void DrawPlayerSelectable(ICharacter player, int idx)
         {
             var (playerName, modifiable) = idx switch
             {
@@ -106,7 +106,7 @@ namespace Snapper.Windows
             DrawSelectable(player, label, modifiable, idx);
         }
 
-        private static string GetLabel(Character player, string playerName, int num)
+        private static string GetLabel(ICharacter player, string playerName, int num)
         {
             if (player.ObjectKind == ObjectKind.Player)
                 return num == 1 ? playerName : $"{playerName} #{num}";

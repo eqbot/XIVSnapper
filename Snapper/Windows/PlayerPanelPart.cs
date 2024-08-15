@@ -31,6 +31,13 @@ namespace Snapper.Windows
 
         private void DrawPlayerPanel()
         {
+            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.ParsedOrange);
+            ImGui.Text("WARNING:");
+            ImGui.PopStyleColor();
+            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
+            ImGui.Text("Glamourer API currently does not allow you to get their Glamourer design automatically like before when synced with mare.");
+            ImGui.Text("As a temporary workaround, copy their Glamourer design to clipboard and edit the file it creates.");
+            ImGui.PopStyleColor();
             ImGui.Text("Save snapshot of player ");
             ImGui.SameLine();
             ImGui.PushFont(UiBuilder.IconFont);
@@ -51,8 +58,9 @@ namespace Snapper.Windows
             if (!IsInGpose)
             {
                 ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
-                ImGui.Text("WARNING: Saving snapshots while GPose is active may result in broken/incorrect snapshots. For best results, leave GPose first.");
+                ImGui.Text("Saving snapshots while GPose is active may result in broken/incorrect snapshots. For best results, leave GPose first.");
                 ImGui.PopStyleColor();
+                ImGui.Spacing();
             }
 
             ImGui.Text("Append to existing snapshot");
