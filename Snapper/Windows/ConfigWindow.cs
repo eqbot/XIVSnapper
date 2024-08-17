@@ -26,8 +26,6 @@ public class ConfigWindow : Window, IDisposable
         this.FileDialogManager = plugin.FileDialogManager;
     }
 
-    private string _singleLineText = "This is a long line of text that should word-wrap inside the text box based on the width you specify.";
-
     public void Dispose() { }
 
     public override void Draw()
@@ -54,7 +52,6 @@ public class ConfigWindow : Window, IDisposable
             });
         }
         ImGui.PopFont();
-
         
         ImGui.Text("Glamourer design fallback string (Temp until GlamourerAPI workaround)");
         string fallbackString = Configuration.FallBackGlamourerString;

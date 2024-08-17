@@ -78,7 +78,7 @@ namespace Snapper
 
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-            //PluginInterface.UiBuilder.DisableGposeUiHide = true;
+            PluginInterface.UiBuilder.DisableGposeUiHide = true;
             PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
         }
 
