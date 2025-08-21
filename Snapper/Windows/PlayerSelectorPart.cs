@@ -1,7 +1,7 @@
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,7 +111,7 @@ namespace Snapper.Windows
             if (player.ObjectKind == ObjectKind.Player)
                 return num == 1 ? playerName : $"{playerName} #{num}";
 
-            if (player.ModelType() == 0)
+            if (player.ObjectKind == ObjectKind.EventNpc)
                 return num == 1 ? $"{playerName} (NPC)" : $"{playerName} #{num} (NPC)";
 
             return num == 1 ? $"{playerName} (Monster)" : $"{playerName} #{num} (Monster)";
@@ -131,6 +131,7 @@ namespace Snapper.Windows
 
             playerNames.Clear();
             gPoseActors.Clear();
+
             for (var i = GPoseObjectId; i < GPoseObjectId + 48; ++i)
             {
                 var player = CharacterFactory.Convert(Plugin.Objects[i]);
@@ -153,7 +154,6 @@ namespace Snapper.Windows
                 if (player != null)
                     DrawPlayerSelectable(player, i);
             }
-
             ImGui.EndChild();
 
             //DrawSelectionButtons();

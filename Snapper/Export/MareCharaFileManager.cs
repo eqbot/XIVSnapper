@@ -23,6 +23,11 @@ public class MareCharaFileManager
         _configuration = plugin.Configuration;
     }
 
+    public MareCharaFileManager(Configuration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public void ClearMareCharaFile()
     {
         LoadedCharaFile = null;
@@ -72,12 +77,12 @@ public class MareCharaFileManager
         return gamePathToFilePath;
     }
 
-    public void ExtractMareCharaFile()
+    public string? ExtractMareCharaFile()
     {
         Dictionary<string, string> extractedFiles = new();
         try
         {
-            if (LoadedCharaFile == null || !File.Exists(LoadedCharaFile.FilePath)) return;
+            if (LoadedCharaFile == null || !File.Exists(LoadedCharaFile.FilePath)) return null;
             var path = Path.Combine(_configuration.WorkingDirectory, "mcdf_" + LoadedCharaFile.CharaFileData.Description);
             //create directory if needed
             if (Directory.Exists(path))
@@ -114,6 +119,7 @@ public class MareCharaFileManager
 
             string infoJson = JsonSerializer.Serialize(snapInfo);
             File.WriteAllText(Path.Combine(_configuration.WorkingDirectory, "mcdf_" + LoadedCharaFile.CharaFileData.Description, "snapshot.json"), infoJson);
+            return path;
         }
         catch { throw; }
     }

@@ -382,7 +382,7 @@ public class IpcManager : IDisposable
             var gameObj = _dalamudUtil.CreateGameObject(obj);
             if (gameObj != null)
             {
-                Logger.Verbose("Redrawing " + gameObj);
+                Logger.Verbose("Redrawing " + gameObj.ToString());
                 _penumbraRedrawObject!.Invoke(gameObj, RedrawType.Redraw);
             }
         });

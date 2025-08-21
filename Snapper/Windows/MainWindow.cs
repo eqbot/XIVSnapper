@@ -7,7 +7,7 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using ImGuiScene;
 using LZ4;
 using Snapper.Utils;

@@ -3,7 +3,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Colors;
 using Dalamud.Plugin.Services;
 using Dalamud.Interface.ImGuiFileDialog;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Snapper.Utils;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace Snapper.Windows
 
         private void DrawPlayerHeader()
         {
-            var color =player == null ? RedHeaderColor : GreenHeaderColor;
+            var color = player == null ? RedHeaderColor : GreenHeaderColor;
             var buttonColor = ImGui.GetColorU32(ImGuiCol.FrameBg);
             ImGui.Button($"{currentLabel}##playerHeader", -Vector2.UnitX * 0.0001f);
         }
@@ -131,7 +131,7 @@ namespace Snapper.Windows
                 return;
             }
 
-            if (player != null || player.ModelType() == 0)
+            if (player != null || player.ObjectKind == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Player)
                 DrawPlayerPanel();
             else
                 DrawMonsterPanel();

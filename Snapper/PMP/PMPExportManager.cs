@@ -14,10 +14,14 @@ namespace Snapper.PMP
 {
     public class PMPExportManager
     {
-        private Plugin plugin;
+        private Configuration configuration;
         public PMPExportManager(Plugin plugin)
         {
-            this.plugin = plugin;
+            this.configuration = plugin.Configuration;
+        }
+        public PMPExportManager(Configuration configuration)
+        {
+            this.configuration = configuration;
         }
 
         public void SnapshotToPMP(string snapshotPath)
@@ -42,7 +46,7 @@ namespace Snapper.PMP
             string pmpFileName = $"{snapshotName}_{Guid.NewGuid()}";
 
 
-            string workingDirectory = Path.Combine(plugin.Configuration.WorkingDirectory, $"temp_{pmpFileName}");
+            string workingDirectory = Path.Combine(configuration.WorkingDirectory, $"temp_{pmpFileName}");
             if (!Directory.Exists(workingDirectory))
             {
                 Directory.CreateDirectory(workingDirectory);
@@ -90,7 +94,7 @@ namespace Snapper.PMP
             }
 
             //zip and make pmp file
-            ZipFile.CreateFromDirectory(workingDirectory, Path.Combine(plugin.Configuration.WorkingDirectory, $"{pmpFileName}.pmp"));
+            ZipFile.CreateFromDirectory(workingDirectory, Path.Combine(configuration.WorkingDirectory, $"{pmpFileName}.pmp"));
 
             //cleanup
             Directory.Delete(workingDirectory, true);

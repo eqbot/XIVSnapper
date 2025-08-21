@@ -64,11 +64,11 @@ public class DalamudUtil : IDisposable
         _condition = condition;
         _chatGui = chatGui;
         _clientState.Login += OnLogin;
-        _clientState.Logout += OnLogout;
+        //_clientState.Logout += OnLogout;
         _framework.Update += FrameworkOnUpdate;
         if (IsLoggedIn)
         {
-            classJobId = _clientState.LocalPlayer!.ClassJob.Id;
+            classJobId = _clientState.LocalPlayer!.ClassJob.RowId;
             OnLogin();
         }
     }
@@ -127,7 +127,7 @@ public class DalamudUtil : IDisposable
         if (DateTime.Now < _delayedFrameworkUpdateCheck.AddSeconds(1)) return;
         if (_clientState.LocalPlayer != null && _clientState.LocalPlayer.IsValid())
         {
-            var newclassJobId = _clientState.LocalPlayer.ClassJob.Id;
+            var newclassJobId = _clientState.LocalPlayer.ClassJob.RowId;
 
             if (classJobId != newclassJobId)
             {
@@ -267,7 +267,7 @@ public class DalamudUtil : IDisposable
     public void Dispose()
     {
         _clientState.Login -= OnLogin;
-        _clientState.Logout -= OnLogout;
+        //_clientState.Logout -= OnLogout;
         _framework.Update -= FrameworkOnUpdate;
     }
 }
