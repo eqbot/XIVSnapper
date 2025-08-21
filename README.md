@@ -1,7 +1,7 @@
 # Snapper
 A plugin for saving/loading the current appearance of a character and all applied mods
 
-Get it from: https://raw.githubusercontent.com/ViviAshe/plugins/main/PluginMaster.json
+Get it from: [https://raw.githubusercontent.com/eqbot/plugins/main/PluginMaster.json](https://raw.githubusercontent.com/eqbot/DalamudPluginRepo/master/pluginmaster.json)
 
 # Usage
 First, configure a working directory in the settings window.
