@@ -35,8 +35,6 @@ public class DalamudUtil : IDisposable
     public event LogIn? LogIn;
     public event LogOut? LogOut;
     public event FrameworkUpdate? FrameworkUpdate;
-    public event ClassJobChanged? ClassJobChanged;
-    private uint? classJobId = 0;
     public event FrameworkUpdate? DelayedFrameworkUpdate;
     public event VoidDelegate? ZoneSwitchStart;
     public event VoidDelegate? ZoneSwitchEnd;
@@ -68,7 +66,6 @@ public class DalamudUtil : IDisposable
         _framework.Update += FrameworkOnUpdate;
         if (IsLoggedIn)
         {
-            classJobId = _clientState.LocalPlayer!.ClassJob.RowId;
             OnLogin();
         }
     }
@@ -125,16 +122,6 @@ public class DalamudUtil : IDisposable
         }
 
         if (DateTime.Now < _delayedFrameworkUpdateCheck.AddSeconds(1)) return;
-        if (_clientState.LocalPlayer != null && _clientState.LocalPlayer.IsValid())
-        {
-            var newclassJobId = _clientState.LocalPlayer.ClassJob.RowId;
-
-            if (classJobId != newclassJobId)
-            {
-                classJobId = newclassJobId;
-                ClassJobChanged?.Invoke();
-            }
-        }
 
         foreach (FrameworkUpdate? frameworkInvocation in (DelayedFrameworkUpdate?.GetInvocationList() ?? Array.Empty<FrameworkUpdate>()).Cast<FrameworkUpdate>())
         {
