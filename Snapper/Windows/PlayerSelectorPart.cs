@@ -8,16 +8,17 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Penumbra.GameData.Structs;
 
 namespace Snapper.Windows
 {
     public partial class MainWindow
     {
-        public const int GPoseObjectId = 201;
-        public const int CharacterScreenIndex = 240;
-        public const int ExamineScreenIndex = 241;
-        public const int FittingRoomIndex = 242;
-        public const int DyePreviewIndex = 243;
+        public static int GPoseObjectId = ObjectIndex.GPosePlayer.Index;
+        public static int CharacterScreenIndex = ObjectIndex.CharacterScreen.Index;
+        public static int ExamineScreenIndex = ObjectIndex.ExamineScreen.Index;
+        public static int FittingRoomIndex = ObjectIndex.FittingRoom.Index;
+        public static int DyePreviewIndex = ObjectIndex.DyePreview.Index;
 
         private string playerFilter = string.Empty;
         private string playerFilterLower = string.Empty;
@@ -80,14 +81,31 @@ namespace Snapper.Windows
 
         private void DrawPlayerSelectable(ICharacter player, int idx)
         {
-            var (playerName, modifiable) = idx switch
+            string playerName;
+            bool modifiable = false;
+
+            if(idx == CharacterScreenIndex)
             {
-                CharacterScreenIndex => ("Character Screen Actor", false),
-                ExamineScreenIndex => ("Examine Screen Actor", false),
-                FittingRoomIndex => ("Fitting Room Actor", false),
-                DyePreviewIndex => ("Dye Preview Actor", false),
-                _ => (player.Name.ToString(), false),
-            };
+                playerName = "Character Screen Actor";
+            }
+            else if(idx == ExamineScreenIndex)
+            {
+                playerName = "Examine Screen Actor";
+            }
+            else if(idx == FittingRoomIndex)
+            {
+                playerName = "Fitting Room Actor";
+            }
+            else if(idx == DyePreviewIndex)
+            {
+                playerName = "Dye Preview Actor";
+            }
+            else
+            {
+                playerName = player.Name.ToString();
+            }
+
+
             if (!playerName.Any())
                 return;
 
@@ -135,8 +153,9 @@ namespace Snapper.Windows
             for (var i = GPoseObjectId; i < GPoseObjectId + 48; ++i)
             {
                 var player = CharacterFactory.Convert(Plugin.Objects[i]);
+  
                 if (player == null)
-                    break;
+                    continue;
 
                 DrawGPoseSelectable(player, i);
             }
@@ -155,6 +174,7 @@ namespace Snapper.Windows
                     DrawPlayerSelectable(player, i);
             }
             ImGui.EndChild();
+
 
             //DrawSelectionButtons();
             ImGui.EndGroup();

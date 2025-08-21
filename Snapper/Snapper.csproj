@@ -34,8 +34,12 @@
         <PackageReference Include="Glamourer.Api" Version="2.6.0" />
         <PackageReference Include="lz4net" Version="1.0.15.93" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.8" />
-        <PackageReference Include="Penumbra.Api" Version="5.10.0" />
-        <PackageReference Include="Penumbra.String" Version="1.0.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Penumbra.Api\Penumbra.Api.csproj" />
+      <ProjectReference Include="..\Penumbra.GameData\Penumbra.GameData.csproj" />
+      <ProjectReference Include="..\Penumbra.String\Penumbra.String.csproj" />
     </ItemGroup>
 
     <ItemGroup>
