@@ -3,6 +3,8 @@ A plugin for saving/loading the current appearance of a character and all applie
 
 Get it from: [https://raw.githubusercontent.com/eqbot/plugins/main/PluginMaster.json](https://raw.githubusercontent.com/eqbot/DalamudPluginRepo/master/pluginmaster.json)
 
+this is probably going to be abandoned after 7.3, so enjoy, i hear 'Snappy' is an alternative but I don't know where the repository for it is
+
 # Usage
 First, configure a working directory in the settings window.
 
